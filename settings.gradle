@@ -1,0 +1,4 @@
+rootProject.name = 'match-engine'
+
+include 'lib-model'
+include 'service-match-engine'
