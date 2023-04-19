@@ -10,7 +10,5 @@ import java.math.BigInteger;
 public class OrderMatch {
     private BigInteger price;
     private BigInteger qty;
-    private Order executingOrder;
-    private Order remainingOrder;
     private Long utc;
 }

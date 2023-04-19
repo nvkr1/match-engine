@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class OrderResponse {
-    private String status;
-    private String message;
+    @Builder.Default
+    private String status = "SUCCESS";
 }

@@ -1,12 +1,19 @@
 package bbattulga.matchengine.servicematchengine.service;
 
 import bbattulga.matchengine.servicematchengine.dto.engine.OrderBookPriceLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.jgrapht.util.AVLTree;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
+
+import java.math.BigInteger;
+import java.util.TreeMap;
 
 @Service
 @RequiredArgsConstructor
-public class OrderBookService extends AVLTree<OrderBookPriceLevel> {
-
+@Getter
+@Setter
+public class OrderBookService {
+    private final TreeMap<BigInteger, OrderBookPriceLevel> bids = new TreeMap<>();
+    private final TreeMap<BigInteger, OrderBookPriceLevel> asks = new TreeMap<>();
 }
