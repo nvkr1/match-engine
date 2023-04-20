@@ -1,7 +1,7 @@
-package bbattulga.matchengine.servicematchengine.dto.engine;
+package bbattulga.matchengine.libmodel.engine;
 
-import bbattulga.matchengine.servicematchengine.consts.OrderSide;
-import bbattulga.matchengine.servicematchengine.consts.OrderType;
+import bbattulga.matchengine.libmodel.consts.OrderSide;
+import bbattulga.matchengine.libmodel.consts.OrderType;
 import com.lmax.disruptor.EventFactory;
 import lombok.Getter;
 import lombok.Setter;

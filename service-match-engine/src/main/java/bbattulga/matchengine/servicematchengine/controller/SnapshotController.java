@@ -1,6 +1,6 @@
 package bbattulga.matchengine.servicematchengine.controller;
 
-import bbattulga.matchengine.servicematchengine.dto.engine.OrderBookSnapshotData;
+import bbattulga.matchengine.libmodel.engine.OrderBookSnapshotData;
 import bbattulga.matchengine.servicematchengine.service.snapshot.OrderBookSnapshotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

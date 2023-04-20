@@ -1,6 +1,6 @@
 package bbattulga.matchengine.servicematchengine.dto.request;
 
-import bbattulga.matchengine.servicematchengine.consts.OrderSide;
+import bbattulga.matchengine.libmodel.consts.OrderSide;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

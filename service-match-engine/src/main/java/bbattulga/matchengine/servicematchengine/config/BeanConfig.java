@@ -1,7 +1,7 @@
 package bbattulga.matchengine.servicematchengine.config;
 
 import bbattulga.matchengine.servicematchengine.OrderEventHandler;
-import bbattulga.matchengine.servicematchengine.dto.engine.OrderEvent;
+import bbattulga.matchengine.libmodel.engine.OrderEvent;
 import com.lmax.disruptor.BusySpinWaitStrategy;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.WaitStrategy;

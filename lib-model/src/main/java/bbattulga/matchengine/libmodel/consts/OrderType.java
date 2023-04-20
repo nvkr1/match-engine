@@ -1,4 +1,4 @@
-package bbattulga.matchengine.servicematchengine.consts;
+package bbattulga.matchengine.libmodel.consts;
 
 public enum OrderType {
     LIMIT,

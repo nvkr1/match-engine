@@ -23,6 +23,8 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	implementation 'com.lmax:disruptor:3.4.4'
 }
 
 dependencyManagement {

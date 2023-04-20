@@ -1,8 +1,8 @@
 package bbattulga.matchengine.servicematchengine.service.executor;
 
-import bbattulga.matchengine.servicematchengine.consts.OrderSide;
-import bbattulga.matchengine.servicematchengine.dto.engine.CancelOrderEvent;
-import bbattulga.matchengine.servicematchengine.dto.engine.OrderBookPriceLevel;
+import bbattulga.matchengine.libmodel.consts.OrderSide;
+import bbattulga.matchengine.libmodel.engine.CancelOrderEvent;
+import bbattulga.matchengine.libmodel.engine.OrderBookPriceLevel;
 import bbattulga.matchengine.servicematchengine.service.OrderBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

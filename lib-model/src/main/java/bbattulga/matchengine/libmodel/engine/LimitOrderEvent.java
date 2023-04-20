@@ -1,6 +1,6 @@
-package bbattulga.matchengine.servicematchengine.dto.engine;
+package bbattulga.matchengine.libmodel.engine;
 
-import bbattulga.matchengine.servicematchengine.consts.OrderSide;
+import bbattulga.matchengine.libmodel.consts.OrderSide;
 import java.math.BigInteger;
 
 public interface LimitOrderEvent {

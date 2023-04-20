@@ -1,8 +1,8 @@
 package bbattulga.matchengine.servicematchengine.service.queue;
 
-import bbattulga.matchengine.servicematchengine.consts.OrderType;
-import bbattulga.matchengine.servicematchengine.dto.engine.LimitOrderEvent;
-import bbattulga.matchengine.servicematchengine.dto.engine.OrderEvent;
+import bbattulga.matchengine.libmodel.consts.OrderType;
+import bbattulga.matchengine.libmodel.engine.LimitOrderEvent;
+import bbattulga.matchengine.libmodel.engine.OrderEvent;
 import bbattulga.matchengine.servicematchengine.dto.request.LimitOrderRequest;
 import com.lmax.disruptor.RingBuffer;
 import lombok.RequiredArgsConstructor;

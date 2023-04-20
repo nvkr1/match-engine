@@ -1,4 +1,4 @@
-package bbattulga.matchengine.servicematchengine.dto.engine;
+package bbattulga.matchengine.libmodel.engine;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

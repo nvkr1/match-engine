@@ -30,6 +30,8 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'com.lmax:disruptor:3.4.4'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
+
+	implementation project(":lib-model")
 }
 
 tasks.named('test') {

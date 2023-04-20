@@ -1,6 +1,6 @@
 package bbattulga.matchengine.servicematchengine.service;
 
-import bbattulga.matchengine.servicematchengine.dto.engine.OrderBookPriceLevel;
+import bbattulga.matchengine.libmodel.engine.OrderBookPriceLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

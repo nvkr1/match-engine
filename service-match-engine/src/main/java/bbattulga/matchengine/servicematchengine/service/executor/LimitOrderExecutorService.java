@@ -1,11 +1,10 @@
 package bbattulga.matchengine.servicematchengine.service.executor;
 
-import bbattulga.matchengine.servicematchengine.consts.OrderSide;
-import bbattulga.matchengine.servicematchengine.consts.OrderType;
-import bbattulga.matchengine.servicematchengine.dto.engine.LimitOrderEvent;
-import bbattulga.matchengine.servicematchengine.dto.engine.Order;
-import bbattulga.matchengine.servicematchengine.dto.engine.OrderBookPriceLevel;
-import bbattulga.matchengine.servicematchengine.dto.engine.OrderEvent;
+import bbattulga.matchengine.libmodel.consts.OrderSide;
+import bbattulga.matchengine.libmodel.consts.OrderType;
+import bbattulga.matchengine.libmodel.engine.LimitOrderEvent;
+import bbattulga.matchengine.libmodel.engine.OrderBookPriceLevel;
+import bbattulga.matchengine.libmodel.engine.OrderEvent;
 import bbattulga.matchengine.servicematchengine.service.OrderBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

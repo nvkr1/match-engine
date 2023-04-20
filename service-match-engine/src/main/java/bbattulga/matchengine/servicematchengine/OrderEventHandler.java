@@ -1,6 +1,6 @@
 package bbattulga.matchengine.servicematchengine;
 
-import bbattulga.matchengine.servicematchengine.dto.engine.OrderEvent;
+import bbattulga.matchengine.libmodel.engine.OrderEvent;
 import bbattulga.matchengine.servicematchengine.service.executor.CancelOrderExecutorService;
 import bbattulga.matchengine.servicematchengine.service.executor.LimitOrderExecutorService;
 import com.lmax.disruptor.EventHandler;

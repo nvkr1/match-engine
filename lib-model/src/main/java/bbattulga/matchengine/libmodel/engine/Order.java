@@ -1,12 +1,11 @@
-package bbattulga.matchengine.servicematchengine.dto.engine;
+package bbattulga.matchengine.libmodel.engine;
 
-import bbattulga.matchengine.servicematchengine.consts.OrderSide;
-import bbattulga.matchengine.servicematchengine.consts.OrderType;
+import bbattulga.matchengine.libmodel.consts.OrderSide;
+import bbattulga.matchengine.libmodel.consts.OrderType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 @Getter
