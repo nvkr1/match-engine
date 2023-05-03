@@ -1,5 +1,16 @@
 version: "3.2"
 services:
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=demo_exchange
+      - POSTGRES_PASSWORD=demo_exchange_secret
+      - POSTGRES_DB=demo_exchange
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5433:5432"
+    volumes:
+      - demo_ex_pgdata:/var/lib/postgresql/data/pgdata
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: 'rabbitmq'
@@ -9,3 +20,6 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=mq_user
       - RABBITMQ_DEFAULT_PASS=mq_password
+
+volumes:
+  demo_ex_pgdata:

@@ -1,3 +1,40 @@
-server:
-  port: 5000
+match-engine:
+  base: BTC
+  quote: USDT
+  maker-fee: 5
+  taker-fee: 5
+  base-scale: 18 # caution: this value should never be changed once deployed
+  quote-scale: 18 # caution: this value should never be changed once deployed
 
+server:
+  port: 5001
+  servlet:
+    context-path: /${match-engine.base}-${match-engine.quote}
+
+spring:
+  application:
+    name: service-match-engine-${match-engine.base}-${match-engine.quote}
+  jpa:
+    database: postgresql
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/demo_exchange
+    username: demo_exchange
+    password: demo_exchange_secret
+  rabbitmq:
+    addresses: localhost
+    username: mq_user
+    password: mq_password
+    ssl:
+      enabled: false
+
+eureka:
+  client:
+    enabled: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+    instance:
+      preferIpAddress: true

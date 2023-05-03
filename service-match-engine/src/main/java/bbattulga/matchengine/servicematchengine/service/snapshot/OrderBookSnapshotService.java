@@ -2,7 +2,7 @@ package bbattulga.matchengine.servicematchengine.service.snapshot;
 
 import bbattulga.matchengine.libmodel.engine.OrderBookPriceLevel;
 import bbattulga.matchengine.libmodel.engine.OrderBookSnapshotData;
-import bbattulga.matchengine.servicematchengine.service.OrderBookService;
+import bbattulga.matchengine.servicematchengine.service.place.OrderBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

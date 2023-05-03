@@ -1,0 +1,17 @@
+server:
+  port: 5004
+
+spring:
+  application:
+    name: service-simulation
+
+  jpa:
+    database: postgresql
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/demo_exchange
+    username: demo_exchange
+    password: demo_exchange_secret

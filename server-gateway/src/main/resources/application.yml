@@ -1,0 +1,33 @@
+server:
+  port: 8762
+
+
+spring:
+  application:
+    name: server-gateway
+  cloud:
+    discovery:
+      locator:
+        enabled: true
+    gateway:
+      routes:
+        - id: service-user
+          uri: http://localhost:5003
+          predicates:
+            - Path=/service-user/**
+          filters:
+            - StripPrefix=1
+        - id: match-engine-btc-usdt
+          uri: lb://service-match-engine-BTC-USDT
+          predicates:
+            - Path=/service-match-engine-BTC-USDT/**
+          filters:
+            - RewritePath=/service-match-engine-(?<segment>.*),/$\{segment}
+eureka:
+  client:
+    fetchRegistry: true
+    registerWithEureka: false
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    preferIpAddress: true

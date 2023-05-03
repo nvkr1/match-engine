@@ -1,4 +1,10 @@
 rootProject.name = 'match-engine'
 
 include 'lib-model'
+include 'lib-service'
+include 'service-engine-consumer'
 include 'service-match-engine'
+include 'service-user'
+include 'server-eureka'
+include 'server-gateway'
+include 'service-simulation'

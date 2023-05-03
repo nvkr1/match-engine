@@ -1,6 +1,8 @@
 package bbattulga.matchengine.libmodel.engine;
 
 import bbattulga.matchengine.libmodel.consts.OrderSide;
+import bbattulga.matchengine.libmodel.consts.OrderStatus;
+
 import java.math.BigInteger;
 
 public interface LimitOrderEvent {
@@ -28,6 +30,10 @@ public interface LimitOrderEvent {
     // order side
     OrderSide getSide();
     void setSide(OrderSide side);
+
+    // order status
+    OrderStatus getStatus();
+    void setStatus(OrderStatus status);
 
     LimitOrderEvent clone();
 }
