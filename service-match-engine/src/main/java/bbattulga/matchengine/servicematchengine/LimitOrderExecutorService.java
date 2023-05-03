@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -62,15 +61,26 @@ public class LimitOrderExecutorService {
             final var level = matchingEntry.getValue();
             final var restingOrders = level.getOrders();
             int orderIndex = 0;
-            while (execOrder.getQty().compareTo(BigInteger.ZERO) > 0 && !restingOrders.isEmpty()) {
+            while (execOrder.getRemainingQty().compareTo(BigInteger.ZERO) > 0 && !restingOrders.isEmpty()) {
                 final var restingOrderOriginal = restingOrders.get(orderIndex);
                 if (restingOrderOriginal.getType() == OrderType.LIMIT) {
                     final var restingOrder = restingOrderOriginal.clone();
-                    final var matchQty = execOrder.getQty().min(restingOrder.getQty());
+                    final var matchQty = execOrder.getRemainingQty().min(restingOrder.getRemainingQty());
+                    final var matchTotal = matchingPrice.multiply(matchQty).divide(BigInteger.valueOf(config.getBaseTick()));
                     final var takerFeeQty = matchQty.multiply(config.getTakerFee()).divide(BigInteger.valueOf(100));
-                    restingOrder.setQty(restingOrder.getQty().subtract(matchQty));
-                    execOrder.setQty(execOrder.getQty().subtract(matchQty));
-                    if (restingOrder.getQty().compareTo(BigInteger.ZERO) == 0) {
+                    final var restingRemainingQty = restingOrder.getRemainingQty().subtract(matchQty);
+                    final var restingRemainingTotal = matchingPrice.multiply(restingRemainingQty).divide(BigInteger.valueOf(config.getBaseTick()));
+                    restingOrder.setRemainingQty(restingRemainingQty);
+                    restingOrder.setRemainingTotal(restingRemainingTotal);
+                    restingOrder.setFillQty(restingOrder.getFillQty().add(matchQty));
+                    restingOrder.setFillTotal(restingOrder.getFillTotal().add(matchTotal));
+                    final var execRemainingQty = execOrder.getRemainingQty().subtract(matchQty);
+                    final var execRemainingTotal = matchingPrice.multiply(execRemainingQty).divide(BigInteger.valueOf(config.getBaseTick()));
+                    execOrder.setRemainingQty(execRemainingQty);
+                    execOrder.setRemainingTotal(execRemainingTotal);
+                    execOrder.setExecQty(execOrder.getExecQty().add(matchQty));
+                    execOrder.setExecTotal(execOrder.getExecTotal().add(matchTotal));
+                    if (restingOrder.getRemainingQty().compareTo(BigInteger.ZERO) == 0) {
                         // resting order fulfilled
                         restingOrder.setStatus(OrderStatus.FULFILLED);
                         restingOrders.remove(orderIndex);
@@ -78,14 +88,12 @@ public class LimitOrderExecutorService {
                         restingOrder.setStatus(OrderStatus.PARTIALLY_FILLED);
                         restingOrders.set(orderIndex, restingOrder);
                     }
-                    boolean isExecOrderFulfilled = execOrder.getQty().compareTo(BigInteger.ZERO) == 0;
+                    boolean isExecOrderFulfilled = execOrder.getRemainingQty().compareTo(BigInteger.ZERO) == 0;
                     if (isExecOrderFulfilled) {
                         execOrder.setStatus(OrderStatus.FULFILLED);
                     } else {
                         execOrder.setStatus(OrderStatus.PARTIALLY_FILLED);
                     }
-                    final var matchQtyScaled = new BigDecimal(matchQty).scaleByPowerOfTen(-1*config.getBaseScale());
-                    final var matchTotal = new BigDecimal(matchingPrice).multiply(matchQtyScaled).toBigIntegerExact();
                     final var makerFeeQty = matchTotal.multiply(config.getMakerFee()).divide(BigInteger.valueOf(100));
                     final var matchOutput = OrderMatchOutput.builder()
                             .base(config.getBase())
@@ -113,7 +121,7 @@ public class LimitOrderExecutorService {
         for (final var rp: removePriceLevel) {
             asks.remove(rp);
         }
-        if (execOrder.getQty().compareTo(BigInteger.ZERO) > 0) {
+        if (execOrder.getRemainingQty().compareTo(BigInteger.ZERO) > 0) {
             // exec order not fulfilled, save as resting order
             newRestingBid((OrderEvent) execOrder, OrderStatus.PARTIALLY_FILLED);
         }
@@ -143,16 +151,27 @@ public class LimitOrderExecutorService {
             final var level = matchingEntry.getValue();
             final var restingOrders = level.getOrders();
             int orderIndex = 0;
-            while (execOrder.getQty().compareTo(BigInteger.ZERO) > 0
+            while (execOrder.getRemainingQty().compareTo(BigInteger.ZERO) > 0
                     && !restingOrders.isEmpty()) {
                 final var restingOrderOriginal = restingOrders.get(orderIndex);
                 if (restingOrderOriginal.getType() == OrderType.LIMIT) {
                     final var restingOrder = restingOrderOriginal.clone();
-                    final var matchQty = execOrder.getQty().min(restingOrder.getQty());
-                    final var makerFee = matchQty.multiply(config.getMakerFee()).divide(BigInteger.valueOf(100));
-                    restingOrder.setQty(restingOrder.getQty().subtract(matchQty));
-                    execOrder.setQty(execOrder.getQty().subtract(matchQty));
-                    if (restingOrder.getQty().compareTo(BigInteger.ZERO) == 0) {
+                    final var matchQty = execOrder.getRemainingQty().min(restingOrder.getRemainingQty());
+                    final var makerFeeQty = matchQty.multiply(config.getMakerFee()).divide(BigInteger.valueOf(100));
+                    final var matchTotal = matchingPrice.multiply(matchQty).divide(BigInteger.valueOf(config.getBaseTick()));
+                    final var restingRemainingQty = restingOrder.getRemainingQty().subtract(matchQty);
+                    final var restingRemainingTotal = matchingPrice.multiply(restingRemainingQty).divide(BigInteger.valueOf(config.getBaseTick()));
+                    restingOrder.setRemainingQty(restingRemainingQty);
+                    restingOrder.setRemainingTotal(restingRemainingTotal);
+                    restingOrder.setFillQty(restingOrder.getFillQty().add(matchQty));
+                    restingOrder.setFillTotal(restingOrder.getFillTotal().add(matchTotal));
+                    final var execRemainingQty = execOrder.getRemainingQty().subtract(matchQty);
+                    final var execRemainingTotal = matchingPrice.multiply(execRemainingQty).divide(BigInteger.valueOf(config.getBaseTick()));
+                    execOrder.setRemainingQty(execRemainingQty);
+                    execOrder.setRemainingTotal(execRemainingTotal);
+                    execOrder.setExecQty(execOrder.getExecQty().add(matchQty));
+                    execOrder.setExecTotal(execOrder.getExecTotal().add(matchTotal));
+                    if (restingOrder.getRemainingQty().compareTo(BigInteger.ZERO) == 0) {
                         // resting order fulfilled
                         restingOrder.setStatus(OrderStatus.FULFILLED);
                         restingOrders.remove(orderIndex);
@@ -160,19 +179,17 @@ public class LimitOrderExecutorService {
                         restingOrder.setStatus(OrderStatus.PARTIALLY_FILLED);
                         restingOrders.set(orderIndex, restingOrder);
                     }
-                    boolean isExecOrderFulfilled = execOrder.getQty().compareTo(BigInteger.ZERO) == 0;
+                    boolean isExecOrderFulfilled = execOrder.getRemainingQty().compareTo(BigInteger.ZERO) == 0;
                     if (isExecOrderFulfilled) {
                         execOrder.setStatus(OrderStatus.FULFILLED);
                     } else {
                         execOrder.setStatus(OrderStatus.PARTIALLY_FILLED);
                     }
-                    final var matchQtyScaled = new BigDecimal(matchQty).scaleByPowerOfTen(-1*config.getBaseScale());
-                    final var matchTotal = new BigDecimal(matchingPrice).multiply(matchQtyScaled).toBigIntegerExact();
                     final var takerFee = matchTotal.multiply(config.getTakerFee()).divide(BigInteger.valueOf(100));
                     final var matchOutput = OrderMatchOutput.builder()
                             .base(config.getBase())
                             .quote(config.getQuote())
-                            .makerFee(makerFee)
+                            .makerFee(makerFeeQty)
                             .takerFee(takerFee)
                             .price(matchingPrice)
                             .total(matchTotal)
@@ -195,7 +212,7 @@ public class LimitOrderExecutorService {
         for (final var rp: removePriceLevel) {
             bids.remove(rp);
         }
-        if (execOrder.getQty().compareTo(BigInteger.ZERO) > 0) {
+        if (execOrder.getRemainingQty().compareTo(BigInteger.ZERO) > 0) {
             // exec order not fulfilled, save as resting order
             newRestingAsk((OrderEvent) execOrder, OrderStatus.PARTIALLY_FILLED);
         }
@@ -230,6 +247,10 @@ public class LimitOrderExecutorService {
                 .price(order.getPrice())
                 .qty(order.getQty())
                 .total(order.getTotal())
+                .execQty(order.getExecQty())
+                .execTotal(order.getExecTotal())
+                .remainingQty(order.getRemainingQty())
+                .remainingTotal(order.getRemainingTotal())
                 .utc(order.getUtc())
                 .build();
         engineOutputPublisherService.publish(openOutput);

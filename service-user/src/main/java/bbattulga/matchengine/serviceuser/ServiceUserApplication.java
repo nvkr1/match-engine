@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(scanBasePackages = {
 		"bbattulga.matchengine.serviceuser",
+		"bbattulga.matchengine.libservice.orderlog",
 }, exclude = {
 		// TODO:: Authentication
 		SecurityAutoConfiguration.class

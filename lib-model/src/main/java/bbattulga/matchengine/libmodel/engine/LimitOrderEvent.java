@@ -23,6 +23,28 @@ public interface LimitOrderEvent {
     BigInteger getQty();
     void setQty(BigInteger qty);
 
+    // order qty
+    BigInteger getTotal();
+    void setTotal(BigInteger qty);
+
+    BigInteger getRemainingQty();
+    void setRemainingQty(BigInteger remainingQty);
+
+    BigInteger getRemainingTotal();
+    void setRemainingTotal(BigInteger remainingTotal);
+
+    BigInteger getExecQty();
+    void setExecQty(BigInteger execQty);
+
+    BigInteger getExecTotal();
+    void setExecTotal(BigInteger execTotal);
+
+    BigInteger getFillQty();
+    void setFillQty(BigInteger fillQty);
+
+    BigInteger getFillTotal();
+    void setFillTotal(BigInteger fillTotal);
+
     // order timestamp
     long getUtc();
     void setUtc(long utc);

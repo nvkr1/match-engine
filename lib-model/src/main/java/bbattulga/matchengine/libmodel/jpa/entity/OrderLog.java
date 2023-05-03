@@ -2,7 +2,6 @@ package bbattulga.matchengine.libmodel.jpa.entity;
 
 import bbattulga.matchengine.libmodel.consts.OrderSide;
 import bbattulga.matchengine.libmodel.consts.OrderStatus;
-import bbattulga.matchengine.libmodel.consts.OrderType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,19 +11,18 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "ex_order")
+@Table(name = "ex_order_log")
 @Getter
 @Setter
-public class Order {
+public class OrderLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID orderLogId;
     private UUID orderId;
     private UUID uid;
     @Enumerated(EnumType.STRING)
     private OrderSide side;
-    @Enumerated(EnumType.STRING)
-    private OrderType type;
     private Long pairId;
     private BigInteger qty;
     private BigInteger price;
@@ -39,5 +37,4 @@ public class Order {
     private OrderStatus status;
     private Long utc;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

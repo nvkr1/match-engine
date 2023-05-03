@@ -1,6 +1,7 @@
 package bbattulga.matchengine.serviceuser.service;
 
 import bbattulga.matchengine.libmodel.consts.OrderStatus;
+import bbattulga.matchengine.libmodel.consts.OrderType;
 import bbattulga.matchengine.libmodel.engine.http.request.LimitOrderRequest;
 import bbattulga.matchengine.libmodel.exception.BadParameterException;
 import bbattulga.matchengine.libmodel.exception.ServiceUnavailableException;
@@ -8,7 +9,6 @@ import bbattulga.matchengine.libmodel.jpa.entity.Asset;
 import bbattulga.matchengine.libmodel.jpa.entity.Order;
 import bbattulga.matchengine.libmodel.jpa.entity.Pair;
 import bbattulga.matchengine.libmodel.jpa.repository.AssetRepository;
-import bbattulga.matchengine.libmodel.jpa.repository.OrderRepository;
 import bbattulga.matchengine.libmodel.jpa.repository.PairRepository;
 import bbattulga.matchengine.serviceuser.dto.request.OrderRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,6 @@ import java.util.UUID;
 @Slf4j
 public class LimitOrderPlaceService {
 
-    private final OrderRepository orderRepository;
     private final MatchEngineService matchEngineService;
     private final PairRepository pairRepository;
     private final AssetRepository assetRepository;
@@ -48,11 +47,16 @@ public class LimitOrderPlaceService {
         order.setUid(uid);
         order.setPairId(pair.getPairId());
         order.setStatus(OrderStatus.PENDING);
+        order.setType(OrderType.LIMIT);
         order.setSide(request.getSide());
         order.setPrice(price);
         order.setQty(qty);
         order.setTotal(total);
         order.setUtc(nowUtc);
+        order.setExecQty(BigInteger.ZERO);
+        order.setFillQty(BigInteger.ZERO);
+        order.setRemainingQty(qty);
+        order.setRemainingTotal(total);
         order.setCreatedAt(LocalDateTime.now());
         limitOrderSavePendingService.savePendingInNewTransaction(order);
         try {

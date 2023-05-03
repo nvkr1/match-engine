@@ -9,6 +9,7 @@ import bbattulga.matchengine.libmodel.jpa.repository.AssetRepository;
 import bbattulga.matchengine.libmodel.jpa.repository.MatchRepository;
 import bbattulga.matchengine.libmodel.jpa.repository.OrderRepository;
 import bbattulga.matchengine.libmodel.jpa.repository.PairRepository;
+import bbattulga.matchengine.libservice.orderlog.OrderLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class MatchConsumer {
     private final AssetRepository assetRepository;
     private final PairRepository pairRepository;
     private final MatchRepository matchRepository;
+    private final OrderLogService orderLogService;
 
     @Transactional
     public void consume(OrderMatchOutput matchOutput) throws BadParameterException {
@@ -32,14 +34,28 @@ public class MatchConsumer {
         final var pair = pairRepository.findByBaseAssetIdAndQuoteAssetIdAndStatus(baseAsset.getAssetId(), quoteAsset.getAssetId(), Pair.Status.ACTIVE).orElseThrow(() -> new BadParameterException("pair-not-found"));
         final var execOrder = orderRepository.findById(UUID.fromString(matchOutput.getExecOrder().getId())).orElseThrow(() -> new BadParameterException("exec-order-not-found"));
         final var remainingOrder = orderRepository.findById(UUID.fromString(matchOutput.getRemainingOrder().getId())).orElseThrow(() -> new BadParameterException("remaining-order-not-found"));
-        execOrder.setQty(matchOutput.getExecOrder().getQty());
         execOrder.setUpdatedAt(LocalDateTime.now());
         execOrder.setStatus(matchOutput.getExecOrder().getStatus());
+        execOrder.setPrice(matchOutput.getExecOrder().getPrice());
+        execOrder.setQty(matchOutput.getExecOrder().getQty());
+        execOrder.setTotal(matchOutput.getExecOrder().getTotal());
+        execOrder.setExecQty(matchOutput.getExecOrder().getExecQty());
+        execOrder.setExecTotal(matchOutput.getExecOrder().getExecTotal());
+        execOrder.setRemainingQty(matchOutput.getExecOrder().getRemainingQty());
+        execOrder.setRemainingTotal(matchOutput.getExecOrder().getRemainingTotal());
         orderRepository.save(execOrder);
-        remainingOrder.setQty(matchOutput.getRemainingOrder().getQty());
+        orderLogService.saveOrderLog(execOrder);
         remainingOrder.setUpdatedAt(LocalDateTime.now());
         remainingOrder.setStatus(matchOutput.getRemainingOrder().getStatus());
+        remainingOrder.setPrice(matchOutput.getRemainingOrder().getPrice());
+        remainingOrder.setQty(matchOutput.getRemainingOrder().getQty());
+        remainingOrder.setTotal(matchOutput.getRemainingOrder().getTotal());
+        remainingOrder.setFillQty(matchOutput.getRemainingOrder().getFillQty());
+        remainingOrder.setFillTotal(matchOutput.getRemainingOrder().getFillTotal());
+        remainingOrder.setRemainingQty(matchOutput.getRemainingOrder().getRemainingQty());
+        remainingOrder.setRemainingTotal(matchOutput.getRemainingOrder().getRemainingTotal());
         orderRepository.save(remainingOrder);
+        orderLogService.saveOrderLog(remainingOrder);
         final var match = new Match();
         match.setExecOrderId(execOrder.getOrderId());
         match.setRemainingOrderId(remainingOrder.getOrderId());

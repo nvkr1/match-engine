@@ -1,10 +1,12 @@
 match-engine:
   base: BTC
   quote: USDT
-  maker-fee: 5
-  taker-fee: 5
+  maker-fee: 5 # percent
+  taker-fee: 5 # percent
   base-scale: 18 # caution: this value should never be changed once deployed
   quote-scale: 18 # caution: this value should never be changed once deployed
+  base-tick: 1000000000000000000 # caution: this value should never be changed once deployed (10**scale)
+  quote-tick: 1000000000000000000 # caution: this value should never be changed once deployed (10**scale)
 
 server:
   port: 5001

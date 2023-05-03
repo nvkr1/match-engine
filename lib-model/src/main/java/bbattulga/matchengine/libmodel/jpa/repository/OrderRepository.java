@@ -1,6 +1,7 @@
 package bbattulga.matchengine.libmodel.jpa.repository;
 
 import bbattulga.matchengine.libmodel.consts.OrderSide;
+import bbattulga.matchengine.libmodel.consts.OrderStatus;
 import bbattulga.matchengine.libmodel.jpa.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,10 +21,12 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
         BigDecimal getQty();
     }
 
+    List<Order> findByPairIdAndStatusInOrderByUtcAsc(Long pairId, List<OrderStatus> status);
+
     @Query(value = "(select\n" +
             "eo.side,\n" +
             "eo.price as \"price\",\n" +
-            "sum(eo.qty) as \"qty\"\n" +
+            "sum(eo.remaining_qty) as \"qty\"\n" +
             "from ex_order eo \n" +
             "where eo.pair_id = :pairId and eo.status = 'OPEN'\n" +
             "group by eo.price, eo.side having eo.side = 'SELL'\n" +
@@ -32,7 +35,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
             "(select\n" +
             "eo.side,\n" +
             "eo.price as \"price\",\n" +
-            "sum(eo.qty) as \"qty\"\n" +
+            "sum(eo.remaining_qty) as \"qty\"\n" +
             "from ex_order eo \n" +
             "where eo.pair_id = :pairId and eo.status = 'OPEN'\n" +
             "group by eo.price, eo.side having eo.side = 'BUY'\n" +

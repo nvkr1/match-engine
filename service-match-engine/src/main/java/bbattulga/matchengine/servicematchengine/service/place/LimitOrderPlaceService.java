@@ -31,6 +31,9 @@ public class LimitOrderPlaceService {
         limitOrder.setSide(order.getSide());
         limitOrder.setUid(order.getUid());
         limitOrder.setQty(order.getQty());
+        limitOrder.setTotal(order.getTotal());
+        limitOrder.setRemainingQty(order.getQty());
+        limitOrder.setRemainingTotal(order.getTotal());
         limitOrder.setPrice(order.getPrice());
         limitOrder.setUtc(order.getUtc());
         ringBuffer.publish(sequenceId);

@@ -5,7 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+		"bbattulga.matchengine.serviceengineconsumer",
+		"bbattulga.matchengine.libservice.orderlog",
+})
 @EntityScan({
 	"bbattulga.matchengine.libmodel.jpa.entity"
 })

@@ -17,5 +17,7 @@ public class MatchEngineConfig {
     private BigInteger makerFee;
     private BigInteger takerFee;
     private Integer baseScale;
+    private Long baseTick;
     private Integer quoteScale;
+    private Long quoteTick;
 }

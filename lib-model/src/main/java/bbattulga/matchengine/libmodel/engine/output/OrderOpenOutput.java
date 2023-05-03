@@ -20,5 +20,9 @@ public class OrderOpenOutput {
     private BigInteger qty;
     private BigInteger price;
     private BigInteger total;
+    private BigInteger remainingQty;
+    private BigInteger remainingTotal;
+    private BigInteger execQty;
+    private BigInteger execTotal;
     private long utc;
 }

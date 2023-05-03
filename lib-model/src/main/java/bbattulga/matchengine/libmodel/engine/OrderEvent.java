@@ -19,6 +19,12 @@ public class OrderEvent implements CancelOrderEvent, LimitOrderEvent, MarketOrde
     private BigInteger qty;
     private BigInteger price;
     private BigInteger total;
+    private BigInteger remainingQty;
+    private BigInteger remainingTotal;
+    private BigInteger execQty = BigInteger.ZERO;
+    private BigInteger execTotal = BigInteger.ZERO;
+    private BigInteger fillQty = BigInteger.ZERO;
+    private BigInteger fillTotal = BigInteger.ZERO;
     private OrderStatus status;
     private long utc;
     public final static EventFactory EVENT_FACTORY
@@ -35,7 +41,13 @@ public class OrderEvent implements CancelOrderEvent, LimitOrderEvent, MarketOrde
         clone.setPrice(price);
         clone.setTotal(total);
         clone.setUtc(utc);
+        clone.setRemainingQty(remainingQty);
+        clone.setRemainingTotal(remainingTotal);
         clone.setStatus(status);
+        clone.setExecQty(execQty);
+        clone.setExecTotal(execTotal);
+        clone.setFillQty(fillQty);
+        clone.setFillTotal(fillTotal);
         return clone;
     }
 }
