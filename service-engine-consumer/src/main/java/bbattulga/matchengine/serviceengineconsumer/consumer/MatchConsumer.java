@@ -32,8 +32,8 @@ public class MatchConsumer {
         final var baseAsset = assetRepository.findBySymbolAndStatus(matchOutput.getBase(), Asset.Status.ACTIVE).orElseThrow(() -> new BadParameterException("asset-not-found"));
         final var quoteAsset = assetRepository.findBySymbolAndStatus(matchOutput.getQuote(), Asset.Status.ACTIVE).orElseThrow(() -> new BadParameterException("asset-not-found"));
         final var pair = pairRepository.findByBaseAssetIdAndQuoteAssetIdAndStatus(baseAsset.getAssetId(), quoteAsset.getAssetId(), Pair.Status.ACTIVE).orElseThrow(() -> new BadParameterException("pair-not-found"));
-        final var execOrder = orderRepository.findById(UUID.fromString(matchOutput.getExecOrder().getId())).orElseThrow(() -> new BadParameterException("exec-order-not-found"));
-        final var remainingOrder = orderRepository.findById(UUID.fromString(matchOutput.getRemainingOrder().getId())).orElseThrow(() -> new BadParameterException("remaining-order-not-found"));
+        final var execOrder = orderRepository.findByOrderCode(UUID.fromString(matchOutput.getExecOrder().getId())).orElseThrow(() -> new BadParameterException("exec-order-not-found"));
+        final var remainingOrder = orderRepository.findByOrderCode(UUID.fromString(matchOutput.getRemainingOrder().getId())).orElseThrow(() -> new BadParameterException("remaining-order-not-found"));
         execOrder.setUpdatedAt(LocalDateTime.now());
         execOrder.setStatus(matchOutput.getExecOrder().getStatus());
         execOrder.setPrice(matchOutput.getExecOrder().getPrice());

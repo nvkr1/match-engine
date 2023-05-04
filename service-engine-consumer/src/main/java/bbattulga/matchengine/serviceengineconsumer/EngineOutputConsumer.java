@@ -1,22 +1,24 @@
 package bbattulga.matchengine.serviceengineconsumer;
 
-import bbattulga.matchengine.libmodel.exception.BadParameterException;
 import bbattulga.matchengine.libmodel.engine.output.EngineOutput;
 import bbattulga.matchengine.libmodel.engine.output.OrderCancelOutput;
 import bbattulga.matchengine.libmodel.engine.output.OrderMatchOutput;
 import bbattulga.matchengine.libmodel.engine.output.OrderOpenOutput;
+import bbattulga.matchengine.libmodel.exception.BadParameterException;
 import bbattulga.matchengine.serviceengineconsumer.config.RabbitMQConfig;
-import bbattulga.matchengine.serviceengineconsumer.consumer.OrderCancelConsumer;
 import bbattulga.matchengine.serviceengineconsumer.consumer.MatchConsumer;
+import bbattulga.matchengine.serviceengineconsumer.consumer.OrderCancelConsumer;
 import bbattulga.matchengine.serviceengineconsumer.consumer.OrderOpenConsumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EngineOutputConsumer {
 
     private final ObjectMapper objectMapper;

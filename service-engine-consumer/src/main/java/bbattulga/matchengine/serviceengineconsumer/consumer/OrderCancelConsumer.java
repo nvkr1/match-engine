@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -18,8 +19,12 @@ public class OrderCancelConsumer {
 
     @Transactional
     public void consume(OrderCancelOutput cancelOrder) throws BadParameterException {
-        final var order = orderRepository.findById(UUID.fromString(cancelOrder.getOrderId())).orElseThrow(() -> new BadParameterException("order-not-found"));
-        order.setStatus(OrderStatus.CANCELLED);
-        orderRepository.save(order);
+        final var orderOpt = orderRepository.findByOrderCode(UUID.fromString(cancelOrder.getOrderId()));
+        if (orderOpt.isPresent()) {
+            final var order = orderOpt.get();
+            order.setStatus(OrderStatus.CANCELLED);
+            order.setUpdatedAt(LocalDateTime.now());
+            orderRepository.save(order);
+        }
     }
 }

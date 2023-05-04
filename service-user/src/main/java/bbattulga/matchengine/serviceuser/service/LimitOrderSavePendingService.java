@@ -16,7 +16,7 @@ public class LimitOrderSavePendingService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void savePendingInNewTransaction(Order order) {
-        order.setStatus(OrderStatus.PENDING);
+        order.setStatus(OrderStatus.PRE_OPEN);
         orderRepository.save(order);
     }
 }

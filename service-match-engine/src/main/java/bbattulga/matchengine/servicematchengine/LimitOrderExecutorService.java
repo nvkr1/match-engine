@@ -245,6 +245,7 @@ public class LimitOrderExecutorService {
                 .base(config.getBase())
                 .quote(config.getQuote())
                 .price(order.getPrice())
+                .side(order.getSide())
                 .qty(order.getQty())
                 .total(order.getTotal())
                 .execQty(order.getExecQty())

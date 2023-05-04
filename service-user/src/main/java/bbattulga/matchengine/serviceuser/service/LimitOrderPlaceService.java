@@ -42,11 +42,13 @@ public class LimitOrderPlaceService {
         final var qty = getQty(request, base);
         final var total = getTotal(request, quote);
         checkTotal(request);
+        final var orderCode = UUID.randomUUID();
         final var uid = UUID.fromString(request.getUid());
         final var order = new Order();
         order.setUid(uid);
+        order.setOrderCode(orderCode);
         order.setPairId(pair.getPairId());
-        order.setStatus(OrderStatus.PENDING);
+        order.setStatus(OrderStatus.PRE_OPEN);
         order.setType(OrderType.LIMIT);
         order.setSide(request.getSide());
         order.setPrice(price);
@@ -71,7 +73,7 @@ public class LimitOrderPlaceService {
 
     private void callMatchEngineLimitOrder(UUID uid, String symbol, Order order) {
         final var engineRequest = LimitOrderRequest.builder()
-                .id(order.getOrderId().toString())
+                .id(order.getOrderCode().toString())
                 .uid(uid.toString())
                 .side(order.getSide())
                 .price(order.getPrice())

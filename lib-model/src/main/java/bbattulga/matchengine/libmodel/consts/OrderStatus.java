@@ -1,7 +1,7 @@
 package bbattulga.matchengine.libmodel.consts;
 
 public enum OrderStatus {
-    PENDING,
+    PRE_OPEN,
     OPEN,
     FULFILLED,
     PARTIALLY_FILLED,

@@ -21,7 +21,7 @@ public class OrderController {
     public OrderResponse placeLimitOrder(@RequestBody OrderRequest request) {
         final var order = limitOrderPlaceService.placeOrder(request);
         return OrderResponse.builder()
-                .orderId(order.getOrderId().toString())
+                .orderId(order.getOrderCode().toString())
                 .build();
     }
 }

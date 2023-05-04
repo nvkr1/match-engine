@@ -1,5 +1,6 @@
 package bbattulga.matchengine.libmodel.engine.output;
 
+import bbattulga.matchengine.libmodel.consts.OrderSide;
 import lombok.*;
 
 import java.math.BigInteger;
@@ -14,6 +15,7 @@ public class OrderOpenOutput {
      * Matching Quantity
      */
     private String orderId;
+    private OrderSide side;
     private String uid;
     private String base;
     private String quote;

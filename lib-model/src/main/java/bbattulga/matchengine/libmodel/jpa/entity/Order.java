@@ -20,6 +20,7 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID orderId;
+    private UUID orderCode;
     private UUID uid;
     @Enumerated(EnumType.STRING)
     private OrderSide side;
