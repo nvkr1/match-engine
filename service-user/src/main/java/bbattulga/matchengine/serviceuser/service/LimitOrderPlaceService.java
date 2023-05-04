@@ -83,7 +83,7 @@ public class LimitOrderPlaceService {
     }
 
     private Pair getPair(OrderRequest request) {
-        return pairRepository.findByPairIdAndStatus(request.getPairId(), Pair.Status.ACTIVE).orElseThrow(() -> new BadParameterException("pair-not-found"));
+        return pairRepository.findBySymbolAndStatus(request.getSymbol(), Pair.Status.ACTIVE).orElseThrow(() -> new BadParameterException("pair-not-found"));
     }
 
     private Asset getBase(Pair pair) {

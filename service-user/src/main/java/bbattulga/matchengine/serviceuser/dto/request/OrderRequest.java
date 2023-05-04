@@ -9,7 +9,7 @@ import lombok.Setter;
 public class OrderRequest {
     private String uid; // TODO:: Authentication
     private OrderSide side;
-    private Long pairId;
+    private String symbol;
     private Double price;
     private Double qty;
     private Double total;

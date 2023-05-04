@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface PairRepository extends JpaRepository<Pair, Long> {
     Optional<Pair> findByPairIdAndStatus(Long pairId, Pair.Status status);
+    Optional<Pair> findBySymbolAndStatus(String symbol, Pair.Status status);
     Optional<Pair> findByBaseAssetIdAndQuoteAssetIdAndStatus(Long baseAssetId, Long quoteAssetId, Pair.Status status);
 }
