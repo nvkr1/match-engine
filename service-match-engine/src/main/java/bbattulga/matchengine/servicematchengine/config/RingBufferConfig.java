@@ -29,7 +29,7 @@ public class RingBufferConfig {
         Disruptor<OrderEvent> disruptor
                 = new Disruptor<>(
                 OrderEvent.EVENT_FACTORY,
-                (int) Math.pow(2, 10),
+                (int) Math.pow(2, 15),
                 threadFactory,
                 ProducerType.MULTI,
                 waitStrategy);
