@@ -30,22 +30,23 @@ services:
         limits:
           cpus: '1'
           memory: 1G
-  service-match-engine:
-    depends_on:
-      - db
-      - rabbitmq
-    image: service-match-engine:0.0.1-SNAPSHOT
-    container_name: 'service-match-engine'
-    ports:
-      - 5001:5001
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5433/demo_exchange
-      - SPRING_RABBITMQ_ADDRESSES=host.docker.internal
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
+# Engine Requires more than 2 cores to serve
+#  service-match-engine:
+#    depends_on:
+#      - db
+#      - rabbitmq
+#    image: service-match-engine:0.0.1-SNAPSHOT
+#    container_name: 'service-match-engine'
+#    ports:
+#      - 5001:5001
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5433/demo_exchange
+#      - SPRING_RABBITMQ_ADDRESSES=host.docker.internal
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '3'
+#          memory: 3G
   service-engine-consumer:
     depends_on:
       - db
