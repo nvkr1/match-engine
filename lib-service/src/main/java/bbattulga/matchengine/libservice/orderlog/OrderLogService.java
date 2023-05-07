@@ -34,6 +34,7 @@ public class OrderLogService {
         log.setRemainingQty(order.getRemainingQty());
         log.setRemainingTotal(order.getRemainingTotal());
         log.setCreatedAt(LocalDateTime.now());
+        log.setNs(order.getNs());
         orderLogRepository.save(log);
     }
 }

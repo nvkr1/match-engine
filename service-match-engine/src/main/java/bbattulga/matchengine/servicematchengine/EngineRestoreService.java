@@ -2,7 +2,6 @@ package bbattulga.matchengine.servicematchengine;
 
 import bbattulga.matchengine.libmodel.consts.OrderStatus;
 import bbattulga.matchengine.libmodel.consts.OrderType;
-import bbattulga.matchengine.libmodel.engine.LimitOrderEvent;
 import bbattulga.matchengine.libmodel.engine.OrderEvent;
 import bbattulga.matchengine.libmodel.exception.AssetNotFoundException;
 import bbattulga.matchengine.libmodel.exception.PairNotFoundException;
@@ -15,12 +14,14 @@ import bbattulga.matchengine.servicematchengine.config.MatchEngineConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EngineRestoreService {
 
     private final MatchEngineConfig config;
@@ -32,6 +33,7 @@ public class EngineRestoreService {
 
     @PostConstruct
     public void restoreOrders() throws JsonProcessingException {
+        final var nsStart = System.nanoTime();
         final var base = assetRepository.findBySymbolAndStatus(config.getBase(), Asset.Status.ACTIVE).orElseThrow(AssetNotFoundException::new);
         final var quote = assetRepository.findBySymbolAndStatus(config.getQuote(), Asset.Status.ACTIVE).orElseThrow(AssetNotFoundException::new);
         final var pair = pairRepository.findByBaseAssetIdAndQuoteAssetIdAndStatus(base.getAssetId(), quote.getAssetId(), Pair.Status.ACTIVE).orElseThrow(PairNotFoundException::new);
@@ -55,10 +57,11 @@ public class EngineRestoreService {
             event.setStatus(order.getStatus());
             event.setUtc(order.getUtc());
             if (event.getType().equals(OrderType.LIMIT)) {
-                limitOrderExecutorService.executeLimitOrder(event);
+                limitOrderExecutorService.executeLimitOrder(event, System.nanoTime(), false);
             } else if (event.getType().equals(OrderType.CANCEL)) {
-                cancelOrderExecutorService.executeCancelOrder(event);
+                cancelOrderExecutorService.executeCancelOrder(event, System.nanoTime(), false);
             }
         }
+        log.info("Engine state restored in {}ns", System.nanoTime() - nsStart);
     }
 }

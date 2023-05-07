@@ -44,18 +44,25 @@ public class OrderOpenConsumer {
             newOrder.setQty(openOrder.getQty());
             newOrder.setTotal(openOrder.getTotal());
             newOrder.setUtc(openOrder.getUtc());
-            newOrder.setExecQty(BigInteger.ZERO);
+            newOrder.setExecQty(openOrder.getExecQty());
+            newOrder.setExecTotal(openOrder.getExecTotal());
             newOrder.setFillQty(BigInteger.ZERO);
             newOrder.setFillTotal(BigInteger.ZERO);
             newOrder.setRemainingQty(openOrder.getRemainingQty());
             newOrder.setRemainingTotal(openOrder.getRemainingTotal());
             newOrder.setCreatedAt(now);
             newOrder.setUpdatedAt(now);
+            newOrder.setNs(openOrder.getNs());
+            newOrder.setExecUtc(openOrder.getExecUtc());
             orderRepository.save(newOrder);
             orderLogService.saveOrderLog(newOrder);
         } else {
             final var order = orderOpt.get();
             order.setStatus(OrderStatus.OPEN);
+            order.setExecQty(openOrder.getExecQty());
+            order.setExecTotal(openOrder.getExecTotal());
+            order.setNs(openOrder.getNs());
+            order.setExecUtc(openOrder.getExecUtc());
             order.setUpdatedAt(now);
             orderRepository.save(order);
             orderLogService.saveOrderLog(order);

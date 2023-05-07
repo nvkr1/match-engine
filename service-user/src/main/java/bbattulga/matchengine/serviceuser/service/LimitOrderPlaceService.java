@@ -1,7 +1,9 @@
 package bbattulga.matchengine.serviceuser.service;
 
+import bbattulga.matchengine.libmodel.consts.OrderSide;
 import bbattulga.matchengine.libmodel.consts.OrderStatus;
 import bbattulga.matchengine.libmodel.consts.OrderType;
+import bbattulga.matchengine.libmodel.engine.http.client.MatchEngineClient;
 import bbattulga.matchengine.libmodel.engine.http.request.LimitOrderRequest;
 import bbattulga.matchengine.libmodel.exception.BadParameterException;
 import bbattulga.matchengine.libmodel.exception.ServiceUnavailableException;
@@ -27,13 +29,14 @@ import java.util.UUID;
 @Slf4j
 public class LimitOrderPlaceService {
 
-    private final MatchEngineService matchEngineService;
+    private final MatchEngineClient matchEngineClient;
     private final PairRepository pairRepository;
     private final AssetRepository assetRepository;
     private final LimitOrderSavePendingService limitOrderSavePendingService;
 
     @Transactional
     public Order placeOrder(OrderRequest request) {
+        checkRequest(request);
         final var nowUtc = Instant.now().toEpochMilli();
         final var pair = getPair(request);
         final var base = getBase(pair);
@@ -81,7 +84,7 @@ public class LimitOrderPlaceService {
                 .total(order.getTotal())
                 .utc(order.getUtc())
                 .build();
-        matchEngineService.limitOrder(symbol, engineRequest);
+        matchEngineClient.limitOrder(symbol, engineRequest);
     }
 
     private Pair getPair(OrderRequest request) {
@@ -130,6 +133,21 @@ public class LimitOrderPlaceService {
         final var computedTotal = price.multiply(qty);
         if (computedTotal.compareTo(requestTotal) != 0) {
             throw new BadParameterException("total-invalid");
+        }
+    }
+
+    private void checkRequest(OrderRequest request) {
+        if (request.getPrice() <= 0) {
+            throw new BadParameterException("invalid-price");
+        }
+        if (request.getQty() <= 0) {
+            throw new BadParameterException("invalid-qty");
+        }
+        if (request.getTotal() <= 0) {
+            throw new BadParameterException("invalid-total");
+        }
+        if (!(request.getSide().equals(OrderSide.BUY) || request.getSide().equals(OrderSide.SELL))) {
+            throw new BadParameterException("invalid-side");
         }
     }
 }

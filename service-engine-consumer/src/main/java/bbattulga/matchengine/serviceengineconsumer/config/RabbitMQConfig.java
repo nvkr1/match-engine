@@ -1,5 +1,7 @@
 package bbattulga.matchengine.serviceengineconsumer.config;
 
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
@@ -26,5 +28,14 @@ public class RabbitMQConfig {
     @Bean
     Binding engineOutputBinding(Queue outputQueue, TopicExchange engineOutExchange) {
         return BindingBuilder.bind(outputQueue).to(engineOutExchange).with("*.*.*");
+    }
+
+    @Bean
+    public SimpleRabbitListenerContainerFactory engineOutputRabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setPrefetchCount(25_000); // Set the prefetch count value here
+        factory.setBatchSize(20_000);
+        return factory;
     }
 }

@@ -10,7 +10,7 @@ import java.math.BigInteger;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderMatchOutput {
+public class OrderMatchOutput extends OutputEvent {
     /**
      * Matching Quantity
      */
@@ -23,5 +23,6 @@ public class OrderMatchOutput {
     private OrderEvent remainingOrder;
     private BigInteger makerFee;
     private BigInteger takerFee;
+    private long ns;
     private long utc;
 }

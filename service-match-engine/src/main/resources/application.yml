@@ -1,24 +1,26 @@
+server:
+  port: 5001
+  servlet:
+    context-path: /${match-engine.base}-${match-engine.quote}
+
 match-engine:
   base: BTC
   quote: USDT
+  symbol: ${match-engine.base}-${match-engine.quote}
   maker-fee: 5 # percent
   taker-fee: 5 # percent
   base-scale: 18 # caution: this value should never be changed once deployed
   quote-scale: 18 # caution: this value should never be changed once deployed
   base-tick: 1000000000000000000 # caution: this value should never be changed once deployed (10**scale)
   quote-tick: 1000000000000000000 # caution: this value should never be changed once deployed (10**scale)
-
-server:
-  port: 5001
-  servlet:
-    context-path: /${match-engine.base}-${match-engine.quote}
+  match-engine-url: http://localhost:${server.port}
 
 spring:
   application:
     name: service-match-engine-${match-engine.base}-${match-engine.quote}
   jpa:
     database: postgresql
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
   datasource:

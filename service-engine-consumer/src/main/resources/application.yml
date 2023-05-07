@@ -1,12 +1,15 @@
 server:
   port: 5002
 
+service-engine-consumer:
+  enabled: true
+
 spring:
   application:
     name: service-engine-consumer
   jpa:
     database: postgresql
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
   datasource:

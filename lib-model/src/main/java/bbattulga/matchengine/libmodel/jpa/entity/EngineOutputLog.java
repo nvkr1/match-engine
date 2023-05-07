@@ -8,16 +8,17 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "ex_output")
+@Table(name = "ex_output_log")
 @Getter
 @Setter
-public class EngineOutput {
+public class EngineOutputLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID engineOutputId;
+    private UUID engineOutputLogId;
     private String type;
+    @Column(length = 2048)
     private String payload;
+    private Long utc;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

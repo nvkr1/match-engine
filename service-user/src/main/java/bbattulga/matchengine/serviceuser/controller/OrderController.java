@@ -24,4 +24,13 @@ public class OrderController {
                 .orderId(order.getOrderCode().toString())
                 .build();
     }
+
+    // TODO:: Authentication
+    @PostMapping("/order/cancel")
+    public OrderResponse placeCancelOrder(@RequestBody OrderRequest request) {
+        final var order = limitOrderPlaceService.placeOrder(request);
+        return OrderResponse.builder()
+                .orderId(order.getOrderCode().toString())
+                .build();
+    }
 }

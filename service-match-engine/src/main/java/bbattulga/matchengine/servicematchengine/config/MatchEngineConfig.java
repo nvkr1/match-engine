@@ -14,10 +14,12 @@ import java.math.BigInteger;
 public class MatchEngineConfig {
     private String base;
     private String quote;
+    private String symbol;
     private BigInteger makerFee;
     private BigInteger takerFee;
     private Integer baseScale;
     private Long baseTick;
     private Integer quoteScale;
     private Long quoteTick;
+    private String matchEngineUrl;
 }

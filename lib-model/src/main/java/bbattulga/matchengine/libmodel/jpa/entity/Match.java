@@ -28,5 +28,6 @@ public class Match {
     private BigInteger makerFee;
     private BigInteger takerFee;
     private Long utc;
+    private Long ns;
     private LocalDateTime createdAt;
 }

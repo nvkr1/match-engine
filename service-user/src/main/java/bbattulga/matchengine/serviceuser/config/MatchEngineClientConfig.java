@@ -1,6 +1,6 @@
 package bbattulga.matchengine.serviceuser.config;
 
-import bbattulga.matchengine.serviceuser.service.MatchEngineService;
+import bbattulga.matchengine.libmodel.engine.http.client.MatchEngineClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,19 +10,19 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Configuration
 @RequiredArgsConstructor
-public class MatchEngineConfig {
+public class MatchEngineClientConfig {
 
     private final ServiceUserConfig config;
 
     @Bean
-    MatchEngineService matchEngineClient() {
+    MatchEngineClient matchEngineClient() {
         final var webClient = WebClient.builder()
                 .baseUrl(config.getMatchEngineUrl())
                 .build();
         HttpServiceProxyFactory httpServiceProxyFactory = HttpServiceProxyFactory
                 .builder(WebClientAdapter.forClient(webClient))
                 .build();
-        return httpServiceProxyFactory.createClient(MatchEngineService.class);
+        return httpServiceProxyFactory.createClient(MatchEngineClient.class);
     }
 
 }

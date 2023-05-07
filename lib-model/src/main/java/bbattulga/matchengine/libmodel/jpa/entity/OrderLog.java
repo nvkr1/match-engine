@@ -36,5 +36,6 @@ public class OrderLog {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
     private Long utc;
+    private Long ns;
     private LocalDateTime createdAt;
 }

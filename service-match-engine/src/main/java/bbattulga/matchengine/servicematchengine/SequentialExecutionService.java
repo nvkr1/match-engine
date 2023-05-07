@@ -9,17 +9,17 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OrderEventHandler {
+public class SequentialExecutionService {
 
     private final LimitOrderExecutorService limitOrderExecutorService;
     private final CancelOrderExecutorService cancelOrderExecutorService;
 
     public EventHandler<OrderEvent>[] getEventHandler() {
         final EventHandler<OrderEvent> eventHandler = (orderEvent, sequence, endOfBatch) -> {
-            log.info("handle order orderEvent");
+            final var nsStart = System.nanoTime();
             switch (orderEvent.getType()) {
-                case LIMIT -> limitOrderExecutorService.executeLimitOrder(orderEvent);
-                case CANCEL -> cancelOrderExecutorService.executeCancelOrder(orderEvent);
+                case LIMIT -> limitOrderExecutorService.executeLimitOrder(orderEvent, nsStart, true);
+                case CANCEL -> cancelOrderExecutorService.executeCancelOrder(orderEvent, nsStart, true);
                 default -> throw new Exception("Invalid order orderEvent type");
             }
         };

@@ -1,0 +1,58 @@
+version: "3.2"
+services:
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=demo_exchange
+      - POSTGRES_PASSWORD=demo_exchange_secret
+      - POSTGRES_DB=demo_exchange
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5433:5432"
+    volumes:
+      - demo_ex_pgdata:/var/lib/postgresql/data/pgdata
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=mq_user
+      - RABBITMQ_DEFAULT_PASS=mq_password
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+  service-match-engine:
+    image: service-match-engine:0.0.1-SNAPSHOT
+    container_name: 'service-match-engine'
+    ports:
+      - 5001:5001
+    environment:
+      - SPRING_RATASOURCE_URL=jdbc:postgresql://host.docker.internal:5433/demo_exchange
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+  service-engine-consumer:
+    image: service-engine-consumer:0.0.1-SNAPSHOT
+    container_name: 'service-engine-consumer'
+    ports:
+      - 5002:5002
+    environment:
+      - SPRING_RATASOURCE_URL=jdbc:postgresql://host.docker.internal:5433/demo_exchange
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+volumes:
+  demo_ex_pgdata:

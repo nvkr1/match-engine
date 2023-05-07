@@ -10,5 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 public class EngineOutput {
     private OutputType type;
+    private long utc;
     private String payload;
 }

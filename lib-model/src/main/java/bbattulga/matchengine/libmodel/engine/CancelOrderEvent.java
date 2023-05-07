@@ -17,4 +17,7 @@ public interface CancelOrderEvent {
     // order side
     OrderSide getSide();
     void setSide(OrderSide side);
+
+    long getUtc();
+    void setUtc(long utc);
 }

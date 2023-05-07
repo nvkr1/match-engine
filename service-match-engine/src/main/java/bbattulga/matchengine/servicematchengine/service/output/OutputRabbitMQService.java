@@ -13,9 +13,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 @Service
 @RequiredArgsConstructor
-public class EngineOutputPublisherService {
+public class OutputRabbitMQService {
 
     private final RabbitTemplate rabbitTemplate;
     private ObjectMapper objectMapper;
@@ -25,10 +27,10 @@ public class EngineOutputPublisherService {
         objectMapper = new ObjectMapper();
     }
 
-
     public void publish(OrderMatchOutput output) throws JsonProcessingException {
         final var engineOut = EngineOutput.builder()
                 .type(OutputType.MATCH)
+                .utc(Instant.now().toEpochMilli())
                 .payload(objectMapper.writeValueAsString(output))
                 .build();
         final var routingKey = String.format("match.%s.%s", output.getBase(), output.getQuote());
@@ -39,6 +41,7 @@ public class EngineOutputPublisherService {
     public void publish(OrderOpenOutput output) throws JsonProcessingException {
         final var engineOut = EngineOutput.builder()
                 .type(OutputType.OPEN)
+                .utc(Instant.now().toEpochMilli())
                 .payload(objectMapper.writeValueAsString(output))
                 .build();
         final var routingKey = String.format("open.%s.%s", output.getBase(), output.getQuote());
@@ -49,6 +52,7 @@ public class EngineOutputPublisherService {
     public void publish(OrderCancelOutput output) throws JsonProcessingException {
         final var engineOut = EngineOutput.builder()
                 .type(OutputType.CANCEL)
+                .utc(Instant.now().toEpochMilli())
                 .payload(objectMapper.writeValueAsString(output))
                 .build();
         final var routingKey = String.format("cancel.%s.%s", output.getBase(), output.getQuote());

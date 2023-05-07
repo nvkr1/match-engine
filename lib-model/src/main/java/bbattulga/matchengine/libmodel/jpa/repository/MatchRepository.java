@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -20,6 +21,8 @@ public interface MatchRepository extends JpaRepository<Match, UUID> {
         BigDecimal getTotal();
         Long getUtc();
     }
+
+    Optional<Match> findByExecOrderIdAndRemainingOrderId(UUID execOrderId, UUID remainingOrderId);
 
     @Query(value = "select\n" +
             "em.match_id as \"matchId\",\n" +

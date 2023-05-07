@@ -1,7 +1,7 @@
 package bbattulga.matchengine.servicematchengine.config;
 
 import bbattulga.matchengine.libmodel.engine.OrderEvent;
-import bbattulga.matchengine.servicematchengine.OrderEventHandler;
+import bbattulga.matchengine.servicematchengine.SequentialExecutionService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lmax.disruptor.BusySpinWaitStrategy;
@@ -20,10 +20,10 @@ import java.util.concurrent.ThreadFactory;
 @RequiredArgsConstructor
 public class RingBufferConfig {
 
-    private final OrderEventHandler orderEventHandler;
+    private final SequentialExecutionService sequentialExecutionService;
 
     @Bean
-    RingBuffer<OrderEvent> orderEventDisruptor() {
+    RingBuffer<OrderEvent> orderEventRingBuffer() {
         ThreadFactory threadFactory = DaemonThreadFactory.INSTANCE;
         WaitStrategy waitStrategy = new BusySpinWaitStrategy();
         Disruptor<OrderEvent> disruptor
@@ -33,7 +33,7 @@ public class RingBufferConfig {
                 threadFactory,
                 ProducerType.MULTI,
                 waitStrategy);
-        disruptor.handleEventsWith(orderEventHandler.getEventHandler());
+        disruptor.handleEventsWith(sequentialExecutionService.getEventHandler());
         return disruptor.start();
     }
 

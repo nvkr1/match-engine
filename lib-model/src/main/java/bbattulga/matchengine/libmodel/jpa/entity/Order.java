@@ -39,6 +39,14 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
     private Long utc;
+    /**
+     * How much time spent executing the order
+     */
+    private Long ns;
+    /**
+     * Last executed time utc
+     */
+    private Long execUtc;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

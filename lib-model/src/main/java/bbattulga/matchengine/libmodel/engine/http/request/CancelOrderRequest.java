@@ -1,10 +1,7 @@
 package bbattulga.matchengine.libmodel.engine.http.request;
 
 import bbattulga.matchengine.libmodel.consts.OrderSide;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigInteger;
 
@@ -12,6 +9,7 @@ import java.math.BigInteger;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class CancelOrderRequest {
     private String id;
     private OrderSide side;

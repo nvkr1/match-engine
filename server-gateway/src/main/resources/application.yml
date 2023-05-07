@@ -17,12 +17,7 @@ spring:
             - Path=/service-user/**
           filters:
             - StripPrefix=1
-        - id: match-engine-btc-usdt
-          uri: lb://service-match-engine-BTC-USDT
-          predicates:
-            - Path=/service-match-engine-BTC-USDT/**
-          filters:
-            - RewritePath=/service-match-engine-(?<segment>.*),/$\{segment}
+
 eureka:
   client:
     fetchRegistry: true
