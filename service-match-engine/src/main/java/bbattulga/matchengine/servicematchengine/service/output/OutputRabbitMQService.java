@@ -2,9 +2,9 @@ package bbattulga.matchengine.servicematchengine.service.output;
 
 import bbattulga.matchengine.libmodel.consts.OutputType;
 import bbattulga.matchengine.libmodel.engine.output.EngineOutput;
-import bbattulga.matchengine.libmodel.engine.output.OrderCancelOutput;
-import bbattulga.matchengine.libmodel.engine.output.OrderMatchOutput;
-import bbattulga.matchengine.libmodel.engine.output.OrderOpenOutput;
+import bbattulga.matchengine.libmodel.engine.output.IOrderCancelOutput;
+import bbattulga.matchengine.libmodel.engine.output.IOrderMatchOutput;
+import bbattulga.matchengine.libmodel.engine.output.IOrderOpenOutput;
 import bbattulga.matchengine.servicematchengine.config.RabbitMQConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +27,7 @@ public class OutputRabbitMQService {
         objectMapper = new ObjectMapper();
     }
 
-    public void publish(OrderMatchOutput output) throws JsonProcessingException {
+    public void publishMatch(IOrderMatchOutput output) throws JsonProcessingException {
         final var engineOut = EngineOutput.builder()
                 .type(OutputType.MATCH)
                 .utc(Instant.now().toEpochMilli())
@@ -38,7 +38,7 @@ public class OutputRabbitMQService {
         rabbitTemplate.convertAndSend(RabbitMQConfig.TOPIC_ENGINE_OUT, routingKey, msg);
     }
 
-    public void publish(OrderOpenOutput output) throws JsonProcessingException {
+    public void publishOpen(IOrderOpenOutput output) throws JsonProcessingException {
         final var engineOut = EngineOutput.builder()
                 .type(OutputType.OPEN)
                 .utc(Instant.now().toEpochMilli())
@@ -49,7 +49,7 @@ public class OutputRabbitMQService {
         rabbitTemplate.convertAndSend(RabbitMQConfig.TOPIC_ENGINE_OUT, routingKey, msg);
     }
 
-    public void publish(OrderCancelOutput output) throws JsonProcessingException {
+    public void publishCancel(IOrderCancelOutput output) throws JsonProcessingException {
         final var engineOut = EngineOutput.builder()
                 .type(OutputType.CANCEL)
                 .utc(Instant.now().toEpochMilli())

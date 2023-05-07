@@ -3,6 +3,7 @@ package bbattulga.matchengine.libmodel.engine.output;
 import bbattulga.matchengine.libmodel.consts.OrderSide;
 import bbattulga.matchengine.libmodel.consts.OrderStatus;
 import bbattulga.matchengine.libmodel.consts.OrderType;
+import bbattulga.matchengine.libmodel.consts.OutputType;
 import lombok.*;
 
 import java.math.BigInteger;
@@ -12,10 +13,9 @@ import java.math.BigInteger;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderCancelOutput extends OutputEvent {
-    /**
-     * Matching Quantity
-     */
+public class OrderCancelOutput extends OutputEvent implements IOrderCancelOutput {
+    @Builder.Default
+    private OutputType outputType = OutputType.CANCEL;
     private String orderId;
     private String uid;
     private OrderSide side;
@@ -25,10 +25,14 @@ public class OrderCancelOutput extends OutputEvent {
     private BigInteger price;
     private BigInteger qty;
     private BigInteger total;
-    private BigInteger execQty;
-    private BigInteger execTotal;
-    private BigInteger fillQty;
-    private BigInteger fillTotal;
+    @Builder.Default
+    private BigInteger execQty = BigInteger.ZERO;
+    @Builder.Default
+    private BigInteger execTotal = BigInteger.ZERO;
+    @Builder.Default
+    private BigInteger fillQty = BigInteger.ZERO;
+    @Builder.Default
+    private BigInteger fillTotal = BigInteger.ZERO;
     private BigInteger remainingQty;
     private BigInteger remainingTotal;
     private OrderStatus status;

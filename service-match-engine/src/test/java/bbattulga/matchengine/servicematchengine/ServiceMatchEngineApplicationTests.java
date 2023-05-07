@@ -68,7 +68,7 @@ class ServiceMatchEngineApplicationTests {
 	private MatchEngineConfig config;
 
 	void waitForQueueFinish() throws InterruptedException {
-		Thread.sleep(1200);
+		Thread.sleep(2000);
 		boolean isQueueEmpty = false;
 		System.out.println("Waiting For " + RabbitMQConfig.QUEUE_ENGINE_OUT + " queue to be consumed");
 		while (!isQueueEmpty) {
@@ -211,6 +211,12 @@ class ServiceMatchEngineApplicationTests {
 		assertThat(pBuy.getExecTotal().compareTo(BigInteger.ZERO)).isEqualTo(0);
 		assertThat(pBuy.getRemainingQty().compareTo(BigInteger.ZERO)).isEqualTo(0);
 		assertThat(pBuy.getRemainingTotal().compareTo(BigInteger.ZERO)).isEqualTo(0);
+		assertThat(pBuy.getNs()).isNotNull();
+		assertThat(pBuy.getExecUtc()).isNotNull();
+		assertThat(pBuy.getStatus()).isNotNull();
+		assertThat(pBuy.getStatus()).isEqualTo(OrderStatus.FULFILLED);
+		assertThat(pBuy.getSide()).isEqualTo(OrderSide.BUY);
+		assertThat(pBuy.getOrderCode().toString()).isEqualTo(buy.getId());
 
 		assertThat(pSell.getUid()).isEqualTo(sellUid);
 		assertThat(pSell.getPrice().compareTo(sell.getPrice())).isEqualTo(0);
@@ -223,11 +229,24 @@ class ServiceMatchEngineApplicationTests {
 		assertThat(pSell.getExecTotal().compareTo(sellTotal)).isEqualTo(0);
 		assertThat(pSell.getRemainingQty()).isEqualTo(BigInteger.ZERO);
 		assertThat(pSell.getRemainingTotal()).isEqualTo(BigInteger.ZERO);
+		assertThat(pSell.getNs()).isNotNull();
+		assertThat(pSell.getExecUtc()).isNotNull();
+		assertThat(pSell.getStatus()).isNotNull();
+		assertThat(pSell.getStatus()).isEqualTo(OrderStatus.FULFILLED);
+		assertThat(pSell.getSide()).isEqualTo(OrderSide.SELL);
+		assertThat(pSell.getOrderCode().toString()).isEqualTo(sell.getId());
 
 		final var match = matchRepository.findByExecOrderIdAndRemainingOrderId(pSell.getOrderId(), pBuy.getOrderId()).orElseThrow(MatchNotFoundException::new);
 		assertThat(match.getQty().compareTo(matchingQty)).isEqualTo(0);
 		assertThat(match.getPrice().compareTo(pSell.getPrice())).isEqualTo(0);
 		assertThat(match.getTotal().compareTo(sellTotal)).isEqualTo(0);
+		assertThat(match.getMakerFee()).isNotNull();
+		assertThat(match.getTakerFee()).isNotNull();
+		assertThat(match.getNs()).isNotNull();
+
+		final var orderBook = orderBookSnapshotService.getSnapshot();
+		assertThat(orderBook.getBids().size()).isEqualTo(0);
+		assertThat(orderBook.getAsks().size()).isEqualTo(0);
 	}
 
 	@Test
@@ -272,6 +291,8 @@ class ServiceMatchEngineApplicationTests {
 		final var pSell = orderRepository.findByOrderCode(sellId).orElseThrow(OrderNotFoundException::new);
 
 		assertThat(pBuy.getUid()).isEqualTo(buyUid);
+		assertThat(pBuy.getSide()).isEqualTo(OrderSide.BUY);
+		assertThat(pBuy.getStatus()).isEqualTo(OrderStatus.FULFILLED);
 		assertThat(pBuy.getPrice().compareTo(buy.getPrice())).isEqualTo(0);
 		assertThat(pBuy.getQty().compareTo(buy.getQty())).isEqualTo(0);
 		assertThat(pBuy.getTotal().compareTo(buy.getTotal())).isEqualTo(0);
@@ -282,8 +303,12 @@ class ServiceMatchEngineApplicationTests {
 		assertThat(pBuy.getExecTotal().compareTo(pSell.getTotal())).isEqualTo(0);
 		assertThat(pBuy.getRemainingQty().compareTo(BigInteger.ZERO)).isEqualTo(0);
 		assertThat(pBuy.getRemainingTotal().compareTo(BigInteger.ZERO)).isEqualTo(0);
+		assertThat(pBuy.getNs()).isNotNull();
 
 		assertThat(pSell.getUid()).isEqualTo(sellUid);
+		assertThat(pSell.getSide()).isEqualTo(OrderSide.SELL);
+		assertThat(pSell.getExecUtc()).isNotNull();
+		assertThat(pSell.getStatus()).isEqualTo(OrderStatus.FULFILLED);
 		assertThat(pSell.getPrice().compareTo(sell.getPrice())).isEqualTo(0);
 		assertThat(pSell.getQty().compareTo(sell.getQty())).isEqualTo(0);
 		assertThat(pSell.getTotal().compareTo(sell.getTotal())).isEqualTo(0);
@@ -294,11 +319,123 @@ class ServiceMatchEngineApplicationTests {
 		assertThat(pSell.getExecTotal().compareTo(BigInteger.ZERO)).isEqualTo(0);
 		assertThat(pSell.getRemainingQty()).isEqualTo(BigInteger.ZERO);
 		assertThat(pSell.getRemainingTotal()).isEqualTo(BigInteger.ZERO);
+		assertThat(pSell.getNs()).isNotNull();
 
 		final var match = matchRepository.findByExecOrderIdAndRemainingOrderId(pBuy.getOrderId(), pSell.getOrderId()).orElseThrow(MatchNotFoundException::new);
 		assertThat(match.getQty().compareTo(matchingQty)).isEqualTo(0);
 		assertThat(match.getPrice().compareTo(pSell.getPrice())).isEqualTo(0);
 		assertThat(match.getTotal().compareTo(sellTotal)).isEqualTo(0);
+		assertThat(match.getMakerFee()).isNotNull();
+		assertThat(match.getTakerFee()).isNotNull();
+		assertThat(match.getNs()).isNotNull();
+
+		final var orderBook = orderBookSnapshotService.getSnapshot();
+		assertThat(orderBook.getBids().size()).isEqualTo(0);
+		assertThat(orderBook.getAsks().size()).isEqualTo(0);
+	}
+
+	@Test
+	@Order(4)
+	void cancelBuy() throws InterruptedException {
+
+		final var matchingQty = BigInteger.valueOf(config.getBaseTick());
+		final var realQty = new BigDecimal(matchingQty).divide(BigDecimal.valueOf(config.getBaseTick()), RoundingMode.DOWN);
+		final var buyPrice = BigInteger.valueOf(24000).multiply(BigInteger.valueOf(config.getQuoteTick()));
+		final var buyTotal = new BigDecimal(buyPrice).multiply(realQty).toBigIntegerExact();
+		final var buyId = UUID.randomUUID();
+		final var buyUid = UUID.randomUUID();
+		final var buy = LimitOrderRequest.builder()
+				.id(buyId.toString())
+				.uid(buyUid.toString())
+				.price(buyPrice)
+				.qty(matchingQty)
+				.total(buyTotal)
+				.side(OrderSide.BUY)
+				.utc(Instant.now().toEpochMilli())
+				.build();
+		limitOrderPlaceService.placeLimitOrder(buy);
+
+		waitForQueueFinish();
+
+		cancelOrderPlaceService.placeCancelOrder(CancelOrderRequest.builder()
+				.id(buyId.toString())
+				.side(buy.getSide())
+				.price(buyPrice)
+				.build());
+
+		waitForQueueFinish();
+
+		final var pBuy = orderRepository.findByOrderCode(buyId).orElseThrow(OrderNotFoundException::new);
+		assertThat(pBuy.getUid()).isEqualTo(buyUid);
+		assertThat(pBuy.getStatus()).isEqualTo(OrderStatus.CANCELLED);
+		assertThat(pBuy.getSide()).isEqualTo(OrderSide.BUY);
+		assertThat(pBuy.getPrice().compareTo(buy.getPrice())).isEqualTo(0);
+		assertThat(pBuy.getQty().compareTo(buy.getQty())).isEqualTo(0);
+		assertThat(pBuy.getTotal().compareTo(buy.getTotal())).isEqualTo(0);
+		assertThat(pBuy.getUtc()).isEqualTo(buy.getUtc());
+		assertThat(pBuy.getNs()).isNotNull();
+		assertThat(pBuy.getExecUtc()).isNotNull();
+		assertThat(pBuy.getFillQty().compareTo(BigInteger.ZERO)).isEqualTo(0);
+		assertThat(pBuy.getFillTotal().compareTo(BigInteger.ZERO)).isEqualTo(0);
+		assertThat(pBuy.getExecQty().compareTo(BigInteger.ZERO)).isEqualTo(0);
+		assertThat(pBuy.getExecTotal().compareTo(BigInteger.ZERO)).isEqualTo(0);
+		assertThat(pBuy.getRemainingQty().compareTo(matchingQty)).isEqualTo(0);
+		assertThat(pBuy.getRemainingTotal().compareTo(buyTotal)).isEqualTo(0);
+
+		final var orderBook = orderBookSnapshotService.getSnapshot();
+		assertThat(orderBook.getBids().size()).isEqualTo(0);
+	}
+
+	@Test
+	@Order(5)
+	void cancelSell() throws InterruptedException {
+
+		final var matchingQty = BigInteger.valueOf(config.getBaseTick());
+		final var realQty = new BigDecimal(matchingQty).divide(BigDecimal.valueOf(config.getBaseTick()), RoundingMode.DOWN);
+		final var sellPrice = BigInteger.valueOf(24000).multiply(BigInteger.valueOf(config.getQuoteTick()));
+		final var sellTotal = new BigDecimal(sellPrice).multiply(realQty).toBigIntegerExact();
+		final var sellId = UUID.randomUUID();
+		final var sellUid = UUID.randomUUID();
+		final var sell = LimitOrderRequest.builder()
+				.id(sellId.toString())
+				.uid(sellUid.toString())
+				.price(sellPrice)
+				.qty(matchingQty)
+				.total(sellTotal)
+				.side(OrderSide.SELL)
+				.utc(Instant.now().toEpochMilli())
+				.build();
+		limitOrderPlaceService.placeLimitOrder(sell);
+
+		waitForQueueFinish();
+
+		cancelOrderPlaceService.placeCancelOrder(CancelOrderRequest.builder()
+				.id(sellId.toString())
+				.side(sell.getSide())
+				.price(sellPrice)
+				.build());
+
+		waitForQueueFinish();
+
+		final var pSell = orderRepository.findByOrderCode(sellId).orElseThrow(OrderNotFoundException::new);
+		assertThat(pSell.getUid()).isEqualTo(sellUid);
+		assertThat(pSell.getStatus()).isEqualTo(OrderStatus.CANCELLED);
+		assertThat(pSell.getSide()).isEqualTo(OrderSide.SELL);
+		assertThat(pSell.getPrice().compareTo(sell.getPrice())).isEqualTo(0);
+		assertThat(pSell.getQty().compareTo(sell.getQty())).isEqualTo(0);
+		assertThat(pSell.getTotal().compareTo(sell.getTotal())).isEqualTo(0);
+		assertThat(pSell.getUtc()).isEqualTo(sell.getUtc());
+		assertThat(pSell.getNs()).isNotNull();
+		assertThat(pSell.getExecUtc()).isNotNull();
+		assertThat(pSell.getFillQty().compareTo(BigInteger.ZERO)).isEqualTo(0);
+		assertThat(pSell.getFillTotal().compareTo(BigInteger.ZERO)).isEqualTo(0);
+		assertThat(pSell.getExecQty().compareTo(BigInteger.ZERO)).isEqualTo(0);
+		assertThat(pSell.getExecTotal().compareTo(BigInteger.ZERO)).isEqualTo(0);
+		assertThat(pSell.getRemainingQty().compareTo(matchingQty)).isEqualTo(0);
+		assertThat(pSell.getRemainingTotal().compareTo(sellTotal)).isEqualTo(0);
+
+		final var orderBook = orderBookSnapshotService.getSnapshot();
+		assertThat(orderBook.getAsks().size()).isEqualTo(0);
 	}
 
 }

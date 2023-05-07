@@ -7,7 +7,6 @@ import bbattulga.matchengine.libmodel.engine.OrderEvent;
 import bbattulga.matchengine.libmodel.engine.output.OrderCancelOutput;
 import bbattulga.matchengine.libmodel.exception.BadParameterException;
 import bbattulga.matchengine.servicematchengine.config.MatchEngineConfig;
-import bbattulga.matchengine.servicematchengine.service.output.OutputRabbitMQService;
 import bbattulga.matchengine.servicematchengine.service.place.OrderBookService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ public class CancelOrderExecutorService {
 
     private final OrderBookService orderBookService;
     private final MatchEngineConfig config;
-    private final OutputRabbitMQService outputRabbitMQService;
+    private final SequentialOutputService sequentialOutputService;
     private boolean isPublish;
 
     public void executeCancelOrder(CancelOrderEvent cancelOrder, long nsStart, boolean isPublish) throws BadParameterException, JsonProcessingException {
@@ -84,7 +83,7 @@ public class CancelOrderExecutorService {
                     .utc(Instant.now().toEpochMilli())
                     .status(OrderStatus.CANCELLED)
                     .build();
-            outputRabbitMQService.publish(cancelOutput);
+            sequentialOutputService.publish(cancelOutput);
         }
     }
 }

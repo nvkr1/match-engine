@@ -29,30 +29,38 @@ services:
       resources:
         limits:
           cpus: '1'
-          memory: 2G
+          memory: 1G
   service-match-engine:
+    depends_on:
+      - db
+      - rabbitmq
     image: service-match-engine:0.0.1-SNAPSHOT
     container_name: 'service-match-engine'
     ports:
       - 5001:5001
     environment:
-      - SPRING_RATASOURCE_URL=jdbc:postgresql://host.docker.internal:5433/demo_exchange
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5433/demo_exchange
+      - SPRING_RABBITMQ_ADDRESSES=host.docker.internal
     deploy:
       resources:
         limits:
           cpus: '1'
           memory: 1G
   service-engine-consumer:
+    depends_on:
+      - db
+      - rabbitmq
     image: service-engine-consumer:0.0.1-SNAPSHOT
     container_name: 'service-engine-consumer'
     ports:
       - 5002:5002
     environment:
-      - SPRING_RATASOURCE_URL=jdbc:postgresql://host.docker.internal:5433/demo_exchange
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5433/demo_exchange
+      - SPRING_RABBITMQ_ADDRESSES=host.docker.internal
     deploy:
       resources:
         limits:
-          cpus: '2'
-          memory: 2G
+          cpus: '1'
+          memory: 1G
 volumes:
   demo_ex_pgdata:

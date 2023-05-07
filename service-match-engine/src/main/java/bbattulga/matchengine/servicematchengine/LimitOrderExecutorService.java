@@ -9,7 +9,6 @@ import bbattulga.matchengine.libmodel.engine.OrderEvent;
 import bbattulga.matchengine.libmodel.engine.output.OrderMatchOutput;
 import bbattulga.matchengine.libmodel.engine.output.OrderOpenOutput;
 import bbattulga.matchengine.servicematchengine.config.MatchEngineConfig;
-import bbattulga.matchengine.servicematchengine.service.output.OutputRabbitMQService;
 import bbattulga.matchengine.servicematchengine.service.place.OrderBookService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ import java.util.List;
 public class LimitOrderExecutorService {
 
     private final OrderBookService orderBookService;
-    private final OutputRabbitMQService outputRabbitMQService;
+    private final SequentialOutputService sequentialOutputService;
     private final MatchEngineConfig config;
     private boolean isPublish = true;
 
@@ -113,7 +112,7 @@ public class LimitOrderExecutorService {
                                 .utc(Instant.now().toEpochMilli())
                                 .ns(matchNs)
                                 .build();
-                        outputRabbitMQService.publish(matchOutput);
+                        sequentialOutputService.publish(matchOutput);
                     }
                     if (isExecOrderFulfilled) {
                         // exec order fulfilled
@@ -126,10 +125,10 @@ public class LimitOrderExecutorService {
                 removePriceLevel.add(matchingPrice); // current price level orders fulfilled
             }
         }
-        final var nsMatchEnd = System.nanoTime();
         for (final var rp: removePriceLevel) {
             asks.remove(rp);
         }
+        final var nsMatchEnd = System.nanoTime();
         if (execOrder.getRemainingQty().compareTo(BigInteger.ZERO) > 0) {
             // exec order not fulfilled, save as resting order
             newRestingBid((OrderEvent) execOrder, OrderStatus.PARTIALLY_FILLED, nsMatchEnd);
@@ -154,11 +153,11 @@ public class LimitOrderExecutorService {
             newRestingAsk((OrderEvent) execOrder, OrderStatus.OPEN, nsStart);
             return;
         }
-        final var matchingSet = matchingBids.entrySet();
-        List<BigInteger> removePriceLevel = new ArrayList<>();
+        final var matchingSet = matchingBids.descendingKeySet();
+        List<BigInteger> removePriceLevel = new ArrayList<>() ;
         final var matchingPrice = execOrder.getPrice();
-        for (final var matchingEntry: matchingSet) {
-            final var level = matchingEntry.getValue();
+        for (final var matchingBidPrice: matchingSet) {
+            final var level = bids.get(matchingBidPrice);
             final var restingOrders = level.getOrders();
             int orderIndex = 0;
             while (execOrder.getRemainingQty().compareTo(BigInteger.ZERO) > 0
@@ -211,7 +210,7 @@ public class LimitOrderExecutorService {
                                 .utc(Instant.now().toEpochMilli())
                                 .ns(matchNs)
                                 .build();
-                        outputRabbitMQService.publish(matchOutput);
+                        sequentialOutputService.publish(matchOutput);
                     }
                     if (isExecOrderFulfilled) {
                         // exec order fulfilled
@@ -221,13 +220,13 @@ public class LimitOrderExecutorService {
                 nsMatchStart = System.nanoTime();
             }
             if (restingOrders.isEmpty()) {
-                removePriceLevel.add(matchingPrice); // current price level orders fulfilled
+                removePriceLevel.add(matchingBidPrice); // current price level orders fulfilled
             }
         }
-        final var nsMatchEnd = System.nanoTime();
         for (final var rp: removePriceLevel) {
             bids.remove(rp);
         }
+        final var nsMatchEnd = System.nanoTime();
         if (execOrder.getRemainingQty().compareTo(BigInteger.ZERO) > 0) {
             // exec order not fulfilled, save as resting order
             newRestingAsk((OrderEvent) execOrder, OrderStatus.PARTIALLY_FILLED, nsMatchEnd);
@@ -280,7 +279,7 @@ public class LimitOrderExecutorService {
                 .ns(ns)
                 .utc(order.getUtc())
                 .build();
-        outputRabbitMQService.publish(openOutput);
+        sequentialOutputService.publish(openOutput);
     }
 
 }
