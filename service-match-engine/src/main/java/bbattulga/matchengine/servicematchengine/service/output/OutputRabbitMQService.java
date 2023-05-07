@@ -35,7 +35,15 @@ public class OutputRabbitMQService {
                 .build();
         final var routingKey = String.format("match.%s.%s", output.getBase(), output.getQuote());
         final var msg = objectMapper.writeValueAsString(engineOut);
-        rabbitTemplate.convertAndSend(RabbitMQConfig.TOPIC_ENGINE_OUT, routingKey, msg);
+        boolean isPublished = false;
+        do {
+            try {
+                rabbitTemplate.convertAndSend(RabbitMQConfig.TOPIC_ENGINE_OUT, routingKey, msg);
+                isPublished = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } while (!isPublished);
     }
 
     public void publishOpen(IOrderOpenOutput output) throws JsonProcessingException {
@@ -46,7 +54,15 @@ public class OutputRabbitMQService {
                 .build();
         final var routingKey = String.format("open.%s.%s", output.getBase(), output.getQuote());
         final var msg = objectMapper.writeValueAsString(engineOut);
-        rabbitTemplate.convertAndSend(RabbitMQConfig.TOPIC_ENGINE_OUT, routingKey, msg);
+        boolean isPublished = false;
+        do {
+            try {
+                rabbitTemplate.convertAndSend(RabbitMQConfig.TOPIC_ENGINE_OUT, routingKey, msg);
+                isPublished = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } while (!isPublished);
     }
 
     public void publishCancel(IOrderCancelOutput output) throws JsonProcessingException {
@@ -57,6 +73,14 @@ public class OutputRabbitMQService {
                 .build();
         final var routingKey = String.format("cancel.%s.%s", output.getBase(), output.getQuote());
         final var msg = objectMapper.writeValueAsString(engineOut);
-        rabbitTemplate.convertAndSend(RabbitMQConfig.TOPIC_ENGINE_OUT, routingKey, msg);
+        boolean isPublished = false;
+        do {
+            try {
+                rabbitTemplate.convertAndSend(RabbitMQConfig.TOPIC_ENGINE_OUT, routingKey, msg);
+                isPublished = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } while (!isPublished);
     }
 }
