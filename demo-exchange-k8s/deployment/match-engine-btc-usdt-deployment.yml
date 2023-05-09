@@ -40,7 +40,7 @@ spec:
           resources:
             requests:
               memory: 15G
-              cpu: 6000m
+              cpu: 7000m
           ports:
             - name: http
               protocol: TCP

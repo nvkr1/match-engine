@@ -1,5 +1,5 @@
 # RingBootEngine
-Open Source Matching engine written in Java, and built on top of Spring Boot framework and [LMAX Disruptor](https://lmax-exchange.github.io/disruptor/disruptor.html)
+Open Source Matching engine written in Java, built on top of Spring Boot framework and [LMAX Disruptor](https://lmax-exchange.github.io/disruptor/disruptor.html)
 
 ### Benchmark (TODO)
 
