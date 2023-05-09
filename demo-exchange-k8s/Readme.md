@@ -19,3 +19,6 @@
 
 ### Installation
     helm repo add locust-k8s-operator https://abdelrhmanhamouda.github.io/locust-k8s-operator/
+
+### Demo Stress Test
+    kubectl apply -f ./stress-test/locust-test-btc-usdt.yml
