@@ -1,0 +1,1 @@
+locust -u 4 -r 4 -t 10s --headless --html report.html
