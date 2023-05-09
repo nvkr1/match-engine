@@ -1,0 +1,111 @@
+# In-Cluster, Ephemeral RabbitMQ Deployment,
+# For real production usage, consider deploying with persistent volume
+apiVersion: v1
+kind: Service
+metadata:
+  name: match-engine-btc-usdt-service
+  namespace: demo-exchange
+spec:
+  selector:
+    app: match-engine-btc-usdt
+  ports:
+    - name: http
+      protocol: TCP
+      port: 5001
+      targetPort: 5001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: match-engine-btc-usdt-deployment
+  namespace: demo-exchange
+  labels:
+    app: match-engine-btc-usdt
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: match-engine-btc-usdt
+  template:
+    metadata:
+      labels:
+        app: match-engine-btc-usdt
+    spec:
+      containers:
+        - name: match-engine-btc-usdt
+          image: battulga918/service-match-engine
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: 15G
+              cpu: 6000m
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 5001
+          env: 
+            # Matching Engine Configuration
+            - name: MATCHENGINE_BASE
+              value: BTC
+            - name: MATCHENGINE_BASESCALE
+              value: "18"
+            - name: MATCHENGINE_BASETICK
+              value: "1000000000000000000"
+            - name: MATCHENGINE_QUOTE
+              value: USDT
+            - name: MATCHENGINE_QUOTESCALE
+              value: "18"
+            - name: MATCHENGINE_QUOTETICK
+              value: "1000000000000000000"
+            - name: MATCHENGINE_MAKERFEE
+              value: "5"
+            - name: MATCHENGINE_TAKERFEE
+              value: "5"
+            # Framework Configuration
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+            - name: SERVER_PORT
+              value: "5001"
+            - name: EUREKA_CLIENT_ENABLED
+              value: "false"
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-db
+                  key: host
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: update
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-db
+                  key: name
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-db
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-db
+                  key: password
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://$(DB_HOST):5432/$(DB_NAME)
+            - name: SPRING_RABBITMQ_ADDRESSES
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-mq
+                  key: host
+            - name: SPRING_RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-mq
+                  key: username
+            - name: SPRING_RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-mq
+                  key: password

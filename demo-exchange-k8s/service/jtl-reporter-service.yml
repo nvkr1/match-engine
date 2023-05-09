@@ -1,0 +1,25 @@
+# External JTL Reporter Deployment
+# https://github.com/ludeknovy/jtl-reporter
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-exchange-jtl-service
+  namespace: demo-exchange
+spec:
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+      nodePort: 0
+  selector: {}
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: demo-exchange-jtl-service
+  namespace: demo-exchange
+subsets:
+  - addresses:
+      - ip: 10.10.51.53
+    ports:
+      - port: 5000

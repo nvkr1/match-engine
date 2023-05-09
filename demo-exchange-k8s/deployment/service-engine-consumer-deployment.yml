@@ -1,0 +1,97 @@
+# In-Cluster, Ephemeral RabbitMQ Deployment,
+# For real production usage, consider deploying with persistent volume
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-engine-consumer
+  namespace: demo-exchange
+spec:
+  selector:
+    app: service-engine-consumer
+  ports:
+    - name: http
+      protocol: TCP
+      port: 5002
+      targetPort: 5002
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-engine-consumer
+  namespace: demo-exchange
+  labels:
+    app: service-engine-consumer
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: service-engine-consumer
+  template:
+    metadata:
+      labels:
+        app: service-engine-consumer
+    spec:
+      containers:
+        - name: service-engine-consumer
+          image: battulga918/service-engine-consumer
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: 2G
+              cpu: 2000m
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 5002
+          env: 
+            # Consumer Configuration
+            - name: SERVICEENGINECONSUMER_ENABLED
+              value: "true"
+            # Framework Configuration
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+            - name: SERVER_PORT
+              value: "5002"
+            - name: EUREKA_CLIENT_ENABLED
+              value: "false"
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-db
+                  key: host
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: update
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-db
+                  key: name
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-db
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-db
+                  key: password
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://$(DB_HOST):5432/$(DB_NAME)
+            - name: SPRING_RABBITMQ_ADDRESSES
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-mq
+                  key: host
+            - name: SPRING_RABBITMQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-mq
+                  key: username
+            - name: SPRING_RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-mq
+                  key: password

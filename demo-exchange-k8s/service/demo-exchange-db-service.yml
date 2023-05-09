@@ -1,0 +1,25 @@
+# External PostgreSQL Deployment
+# https://hub.docker.com/_/postgres
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-exchange-db-service
+  namespace: demo-exchange
+spec:
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+      nodePort: 0
+  selector: {}
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: demo-exchange-db-service
+  namespace: demo-exchange
+subsets:
+  - addresses:
+      - ip: 10.10.51.53
+    ports:
+      - port: 5432

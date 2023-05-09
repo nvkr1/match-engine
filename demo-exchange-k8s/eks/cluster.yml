@@ -1,0 +1,50 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: demo-exchange-cluster
+  region: ap-east-1
+
+vpc:
+  cidr: 10.10.0.0/16
+  autoAllocateIPv6: true
+  clusterEndpoints:
+    publicAccess: true
+    privateAccess: true
+  nat:
+    gateway: Single
+
+managedNodeGroups:
+  - name: managed-ng-1
+    minSize: 0
+    maxSize: 2
+    desiredCapacity: 0
+    volumeSize: 20
+    instanceType: t3.xlarge
+    ssh:
+      allow: true
+      publicKeyPath: ~/.ssh/battulga.pub
+      # new feature for restricting SSH access to certain AWS security group IDs
+    labels: {role: worker}
+    tags:
+      nodegroup-role: worker
+
+fargateProfiles:
+  - name: fp-default
+    selectors:
+      # All workloads in the "default" Kubernetes namespace will be
+      # scheduled onto Fargate:
+      - namespace: default
+      # All workloads in the "kube-system" Kubernetes namespace will be
+      # scheduled onto Fargate:
+      - namespace: kube-system
+  - name: fp-demo-exchange
+    selectors:
+      # All workloads in the "demo-exchange" Kubernetes namespace matching the following
+      # label selectors will be scheduled onto Fargate:
+      - namespace: demo-exchange
+  - name: fp-kubernetes-dashboard
+    selectors:
+      # All workloads in the "kubernetes-dashboard" Kubernetes namespace matching the following
+      # label selectors will be scheduled onto Fargate:
+      - namespace: kubernetes-dashboard

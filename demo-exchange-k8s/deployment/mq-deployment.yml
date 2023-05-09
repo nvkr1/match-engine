@@ -1,0 +1,64 @@
+# In-Cluster, Ephemeral RabbitMQ Deployment,
+# For real production usage, consider deploying with persistent volume
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-exchange-mq-service
+  namespace: demo-exchange
+spec:
+  type: NodePort
+  selector:
+    app: demo-exchange-mq
+  ports:
+    - name: amqp
+      protocol: TCP
+      port: 5672
+      targetPort: 5672
+    - name: http
+      protocol: TCP
+      port: 15672
+      targetPort: 15672
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-exchange-mq-deployment
+  namespace: demo-exchange
+  labels:
+    app: demo-exchange-mq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-exchange-mq
+  template:
+    metadata:
+      labels:
+        app: demo-exchange-mq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3-management-alpine
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: 1G
+              cpu: 1000m
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-mq
+                  key: username
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: demo-exchange-mq
+                  key: password
+          ports:
+            - name: amqp
+              protocol: TCP
+              containerPort: 5672
+            - name: http
+              protocol: TCP
+              containerPort: 15672
