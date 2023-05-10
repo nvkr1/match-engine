@@ -14,10 +14,10 @@ import decimal
 pair = 'BTC-USDT'
 min_price = 28000
 max_price = 30000
-price_std_dev_percent = Decimal(1)/10
+price_std_dev = Decimal(290)
 qty_min = Decimal(1)/1000
 qty_max = Decimal(1)
-qty_std_dev_percent = Decimal(1)/100
+qty_std_dev = Decimal(1)/100
 cancel_percent = 10
 jtl_url = 'http://demo-exchange-jtl-service.demo-exchange.svc.cluster.local'
 jtl_token = 'at-5c829081-62d6-442b-8496-a16febb3cf72'
@@ -219,8 +219,8 @@ def order_generator(min_price: Decimal, max_price: Decimal, qty_min: Decimal, qt
         side = random.choice(sides)
         user_id = str(uuid.uuid4())
         order_id = str(uuid.uuid4())
-        price = Decimal(random_number_between(min_price, max_price, price_std_dev_percent))
-        qty = Decimal(random_number_between(qty_min, qty_max, qty_std_dev_percent))
+        price = Decimal(random_number_between(min_price, max_price, price_std_dev))
+        qty = Decimal(random_number_between(qty_min, qty_max, qty_std_dev))
         total = price * qty
         print(f'{price} {qty} {total}')
         req_price = '{0:.0f}'.format(Decimal(price)*quote_tick)

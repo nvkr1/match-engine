@@ -42,8 +42,8 @@ spec:
           imagePullPolicy: Always
           resources:
             requests:
-              memory: 1G
-              cpu: 1000m
+              memory: 3G
+              cpu: 2500m
           env:
             - name: RABBITMQ_DEFAULT_USER
               valueFrom:

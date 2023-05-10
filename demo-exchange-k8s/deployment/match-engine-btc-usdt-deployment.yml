@@ -40,7 +40,7 @@ spec:
           resources:
             requests:
               memory: 15G
-              cpu: 7000m
+              cpu: 8000m
           ports:
             - name: http
               protocol: TCP
@@ -64,6 +64,12 @@ spec:
             - name: MATCHENGINE_TAKERFEE
               value: "5"
             # Framework Configuration
+            - name: SERVER_TOMCAT_THREADS_MAX
+              value: "1000"
+            - name: SERVER_TOMCAT_MAXCONNECTIONS
+              value: "100000"
+            - name: SERVER_TOMCAT_ACCEPT_COUNT
+              value: "500"
             - name: SPRING_PROFILES_ACTIVE
               value: prod
             - name: SERVER_PORT

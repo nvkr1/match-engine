@@ -211,7 +211,7 @@ def order_generator(min_price: Decimal, max_price: Decimal, qty_min: Decimal, qt
         side = random.choice(sides)
         user_id = str(uuid.uuid4())
         order_id = str(uuid.uuid4())
-        price = Decimal(random_number_between(min_price, max_price, Decimal(1)/10))
+        price = Decimal(random_number_between(min_price, max_price, 290))
         qty = Decimal(random_number_between(qty_min, qty_max, Decimal(1)/100))
         total = price * qty
         print(f'{price} {qty} {total}')
