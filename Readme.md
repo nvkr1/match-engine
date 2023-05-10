@@ -13,9 +13,9 @@ Open Source Matching engine written in Java, built on top of Spring Boot framewo
 
 #### JTL Report
 ##### Overall
-![Overall](https://raw.githubusercontent.com/bbattulga/match-engine/main/images/rps-7000-overall.jpg)
+![Overall](https://raw.githubusercontent.com/bbattulga/match-engine/main/images/rps-7000-overall.png)
 ##### Requests
-![Requests](https://raw.githubusercontent.com/bbattulga/match-engine/main/images/rps-7000-requests.jpg)
+![Requests](https://raw.githubusercontent.com/bbattulga/match-engine/main/images/rps-7000-requests.png)
 
 ### Technology stack
 - Java 17
